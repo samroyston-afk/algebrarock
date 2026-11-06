@@ -1,0 +1,2521 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Rock the Unknown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Permanent+Marker&family=Shrikhand&display=swap">
+<style>
+/* Layout: a tour poster of ticket stubs leads to a lit stage, where each question sits on the LED wall above an amp-panel keypad; results come back as a laminated backstage pass. One deliberate night-time look. */
+:root {
+  color-scheme: dark;
+  /* stage */
+  --night: #160e2c;
+  --night-2: #211741;
+  --night-3: #2d2155;
+  --haze: #45377c;
+  --scrim: rgba(9, 5, 20, 0.74);
+  --floor-glow: rgba(255, 140, 60, 0.13);
+  --beam-a: rgba(255, 179, 71, 0.15);
+  --beam-b: rgba(255, 79, 154, 0.12);
+  --dot: rgba(246, 241, 255, 0.075);
+  --wall: #120b25;
+  --wall-edge: #3b2e6e;
+  --rig-off: #3a2d5f;
+  /* light */
+  --tungsten: #ffb347;
+  --tungsten-soft: rgba(255, 179, 71, 0.2);
+  --tungsten-glow: rgba(255, 179, 71, 0.55);
+  --gel: #ff4f9a;
+  --gel-soft: rgba(255, 79, 154, 0.22);
+  --gel-glow: rgba(255, 79, 154, 0.55);
+  --gel-deep: #7a1748;
+  --gel-ink: #b0145a;
+  /* paper */
+  --paper: #f3e9d7;
+  --paper-dim: #b8ad9e;
+  --paper-edge: #0b0619;
+  --ink: #261c31;
+  --ink-soft: #5d5168;
+  --perf: #b3a690;
+  --tape: #2b2b30;
+  --tape-ink: #f4efe2;
+  /* text */
+  --chalk: #f6f1ff;
+  --mist: #b9b0d8;
+  /* feedback */
+  --good: #86e8bb;
+  --bad: #ff7a6b;
+  /* amp */
+  --tolex: #29222f;
+  --tolex-line: rgba(255, 255, 255, 0.035);
+  --piping: #bf9f63;
+  --key: #efe4cd;
+  --key-ink: #2a2230;
+  --key-shadow: #8c7f68;
+  --key-dim: #8f877b;
+  --lcd: #0f0a1c;
+  --lcd-edge: #3a2f55;
+  --lcd-shadow: rgba(0, 0, 0, 0.6);
+  --amp-shadow: rgba(0, 0, 0, 0.45);
+  /* crowd */
+  --crowd-back: #261a49;
+  --crowd-front: #0c0720;
+  /* pass */
+  --pass: #fbf8f1;
+  --pass-sheen: rgba(255, 255, 255, 0.55);
+  --pass-guest: #8d84a8;
+  --icon-cut: var(--night);
+  /* type */
+  --display: 'Shrikhand', 'Arial Black', 'Helvetica Neue', Impact, sans-serif;
+  --marker: 'Permanent Marker', 'Marker Felt', 'Comic Sans MS', cursive;
+  --body: 'Atkinson Hyperlegible', Verdana, 'Segoe UI', system-ui, sans-serif;
+  --key-h: clamp(44px, 7.4vh, 62px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { height: 100%; box-sizing: border-box; -webkit-text-size-adjust: 100%; }
+body {
+  height: 100%; margin: 0;
+  background: radial-gradient(130% 55% at 50% 108%, var(--floor-glow), transparent 62%), var(--night);
+  color: var(--chalk); font-family: var(--body); font-size: 16px; line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+html.playing, html.playing body { overflow: hidden; overscroll-behavior: none; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { cursor: default; }
+:focus-visible { outline: 3px solid var(--gel); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+
+/* ---------- stage lighting ---------- */
+.lights { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.lights::before, .lights::after {
+  content: ""; position: absolute; top: -8vh; width: 70vmax; height: 140vh;
+  transform-origin: 50% 0; filter: blur(16px);
+}
+.lights::before { left: calc(12% - 35vmax); background: conic-gradient(from 166deg at 50% 0%, transparent 0deg, var(--beam-a) 11deg, transparent 24deg); animation: sweepA 12s ease-in-out infinite alternate; }
+.lights::after { right: calc(12% - 35vmax); background: conic-gradient(from 168deg at 50% 0%, transparent 0deg, var(--beam-b) 10deg, transparent 22deg); animation: sweepB 15s ease-in-out infinite alternate; }
+@keyframes sweepA { from { transform: rotate(-16deg); } to { transform: rotate(4deg); } }
+@keyframes sweepB { from { transform: rotate(14deg); } to { transform: rotate(-6deg); } }
+
+#app {
+  position: relative; z-index: 1; min-height: 100%;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+html.playing #app { height: 100%; }
+.screen { max-width: 600px; margin: 0 auto; }
+
+/* ---------- shared bits ---------- */
+.icon-btn {
+  width: 44px; height: 44px; flex: none; padding: 0; border-radius: 12px;
+  border: 1.5px solid var(--haze); background: var(--night-2); color: var(--chalk);
+  display: grid; place-items: center;
+}
+.icon-btn svg { width: 22px; height: 22px; }
+.btn {
+  min-height: 52px; padding: 12px 18px; border-radius: 14px; border: 2px solid var(--haze);
+  background: var(--night-2); color: var(--chalk); font-weight: 700; font-size: 17px; line-height: 1.15;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+}
+.btn small { display: block; font-weight: 400; font-size: 13px; color: var(--mist); }
+.btn.primary { background: var(--tungsten); border-color: var(--tungsten); color: var(--ink); box-shadow: 0 0 24px var(--tungsten-soft); }
+.btn.primary small { color: var(--ink-soft); }
+.btn:disabled { opacity: 0.45; box-shadow: none; }
+.btn.ghost { background: transparent; }
+.btn:active:not(:disabled) { transform: translateY(2px); }
+.math { font-family: var(--body); font-weight: 700; font-variant-numeric: lining-nums; letter-spacing: 0.01em; }
+.v { font-style: italic; font-weight: 700; color: var(--gel); padding: 0 0.03em; }
+.box {
+  display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -0.16em;
+  border: 0.08em solid var(--tungsten); border-radius: 0.16em; background: var(--tungsten-soft);
+  box-shadow: 0 0 0.35em var(--tungsten-soft);
+}
+.frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; font-size: 0.78em; margin: 0 0.12em; line-height: 1.12; }
+.frac .ft { border-bottom: 0.08em solid currentColor; padding: 0 0.18em 0.04em; }
+.frac .fb { padding: 0.04em 0.18em 0; }
+sup { font-size: 0.6em; line-height: 0; vertical-align: 0.75em; }
+.ml { display: block; }
+.picks { display: inline-flex; gap: 3px; vertical-align: middle; }
+.pk { width: 18px; height: 20px; }
+.pk path { fill: transparent; stroke: currentColor; stroke-width: 1.6; opacity: 0.45; }
+.pk.on path { fill: var(--tungsten); stroke: var(--ink); opacity: 1; }
+
+/* ---------- tour poster ---------- */
+.tour { padding-block: 14px 44px; display: flex; flex-direction: column; gap: 22px; }
+.tour-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.wordmark { font: 400 21px/1 var(--display); color: var(--tungsten); display: flex; align-items: center; gap: 9px; }
+.wordmark .wm-x { width: 26px; height: 28px; flex: none; }
+.poster { text-align: center; display: grid; gap: 8px; padding-top: 6px; }
+.kicker { font-weight: 700; font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--tungsten); }
+.poster-band {
+  font: 400 clamp(38px, 11.5vw, 66px)/1.02 var(--display); color: var(--chalk); text-wrap: balance;
+  overflow-wrap: anywhere; text-shadow: 0 0 26px var(--tungsten-soft), 0 3px 0 var(--gel-deep);
+}
+.tour-line { font-weight: 700; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mist); }
+.player { display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: var(--mist); font-size: 15px; }
+.player svg { width: 24px; height: 24px; color: var(--tungsten); }
+.scoreboard { display: grid; grid-template-columns: 1fr 1fr 1.5fr; border-block: 1.5px solid var(--haze); }
+.scoreboard > div { padding: 12px 10px; display: grid; gap: 3px; align-content: start; min-width: 0; }
+.scoreboard > div + div { border-left: 1.5px solid var(--haze); }
+.sb-n { font-weight: 700; font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.sb-n small { font-size: 14px; color: var(--mist); font-weight: 400; }
+.sb-l { font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mist); }
+.sb-status .sb-n { font-size: 16px; line-height: 1.2; }
+.sb-next { font-size: 12.5px; color: var(--mist); line-height: 1.3; }
+.meter { height: 6px; border-radius: 3px; background: var(--night-3); overflow: hidden; margin-top: 4px; }
+.meter > i { display: block; height: 100%; width: 0; background: var(--tungsten); border-radius: inherit; transition: width 0.6s ease; }
+
+.tickets { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.ticket {
+  position: relative; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; text-align: left;
+  border: 0; padding: 0; border-radius: 10px; background: var(--paper); color: var(--ink);
+  box-shadow: 0 5px 0 var(--paper-edge); transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.ticket:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--paper-edge); }
+.t-main { padding: 14px 14px 15px 18px; display: grid; gap: 3px; min-width: 0; }
+.t-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-weight: 700; font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
+.t-year { padding: 2px 6px; border: 1.5px solid currentColor; border-radius: 4px; letter-spacing: 0.08em; }
+.t-name { font: 400 clamp(22px, 6.2vw, 27px)/1.08 var(--display); color: var(--ink); text-wrap: balance; }
+.t-skill { font-size: 15px; color: var(--ink-soft); line-height: 1.3; }
+.t-stub {
+  position: relative; width: 98px; padding: 12px 10px; border-left: 2px dashed var(--perf);
+  display: grid; place-content: center; justify-items: center; gap: 6px; text-align: center;
+}
+.t-stub::before, .t-stub::after { content: ""; position: absolute; left: -9px; width: 16px; height: 16px; border-radius: 50%; background: var(--night); }
+.t-stub::before { top: -8px; }
+.t-stub::after { bottom: -8px; }
+.t-best { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.t-stub svg.lock { width: 22px; height: 22px; color: var(--ink-soft); }
+.ticket.locked { background: var(--paper-dim); }
+.ticket.locked .t-name, .ticket.locked .t-skill { opacity: 0.62; }
+.ticket.next-up .t-stub .t-best { color: var(--gel-ink); }
+.tour-foot { font-size: 13.5px; color: var(--mist); text-align: center; max-width: 46ch; margin: 4px auto 0; line-height: 1.5; }
+
+/* ---------- sheets ---------- */
+.sheet { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: var(--scrim); }
+.sheet-card {
+  width: 100%; max-width: 560px; max-height: calc(100% - 20px); overflow: auto; overscroll-behavior: contain;
+  background: var(--night-2); border: 1.5px solid var(--haze); border-bottom: 0; border-radius: 20px 20px 0 0;
+  padding: 22px max(18px, env(safe-area-inset-right, 0px)) calc(22px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px));
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; animation: sheetUp 0.28s ease-out;
+}
+@keyframes sheetUp { from { transform: translateY(28px); } to { transform: none; } }
+.sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.sheet-head h2 { font: 400 clamp(28px, 8vw, 36px)/1.05 var(--display); color: var(--chalk); text-wrap: balance; }
+.meta { font-weight: 700; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--tungsten); }
+.vs-skill { font-size: 17px; font-weight: 700; color: var(--chalk); }
+.vs-blurb { color: var(--mist); }
+.led {
+  border-radius: 12px; background-color: var(--wall); border: 1.5px solid var(--wall-edge);
+  background-image: radial-gradient(circle at 1.5px 1.5px, var(--dot) 1.2px, transparent 1.6px); background-size: 6px 6px;
+}
+.vs-example { padding: 18px 12px; text-align: center; font-size: clamp(24px, 7vw, 32px); white-space: nowrap; overflow-x: auto; }
+.vs-goal, .vs-best { font-size: 15px; color: var(--mist); }
+.vs-goal b, .vs-best b { color: var(--chalk); }
+.vs-best .pk { width: 16px; height: 18px; }
+.vs-best .pk path { stroke: var(--mist); }
+.vs-best .pk.on path { stroke: var(--ink); }
+.vs-lock { padding: 12px 14px; border-radius: 12px; background: var(--night-3); color: var(--chalk); font-size: 15px; }
+.vs-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { display: grid; gap: 8px; }
+.field > label, fieldset legend { font-weight: 700; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mist); padding: 0; }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.name-row { display: flex; gap: 8px; }
+.name-row input {
+  flex: 1 1 0; width: 0; min-width: 0; height: 50px; padding: 0 14px; border-radius: 12px; border: 2px solid var(--haze);
+  background: var(--night); color: var(--chalk); font: 400 20px/1 var(--display);
+}
+.name-row input:focus { border-color: var(--tungsten); outline: none; }
+.name-row .icon-btn { width: 50px; height: 50px; }
+.choice-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.year-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.choice { position: relative; display: grid; }
+.choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice span {
+  min-height: 52px; padding: 8px 4px; border-radius: 12px; border: 2px solid var(--haze); background: var(--night);
+  display: grid; justify-items: center; align-content: center; gap: 4px; text-align: center; font-size: 13.5px; font-weight: 700; color: var(--mist);
+  --icon-cut: var(--night);
+}
+.choice span svg { width: 30px; height: 30px; color: var(--chalk); }
+.choice input:checked + span { border-color: var(--tungsten); background: var(--tungsten); color: var(--ink); --icon-cut: var(--tungsten); }
+.choice input:checked + span svg { color: var(--ink); }
+.choice input:focus-visible + span { outline: 3px solid var(--gel); outline-offset: 2px; }
+.year-grid .choice span { font-size: 15px; }
+.note { font-size: 13.5px; color: var(--mist); }
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0; font-size: 16px; }
+.switch { position: relative; width: 52px; height: 30px; flex: none; }
+.switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; z-index: 1; }
+.switch i { position: absolute; inset: 0; border-radius: 15px; background: var(--night-3); border: 1.5px solid var(--haze); transition: background 0.2s; }
+.switch i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 50%; background: var(--mist); transition: transform 0.2s, background 0.2s; }
+.switch input:checked + i { background: var(--tungsten-soft); border-color: var(--tungsten); }
+.switch input:checked + i::after { transform: translateX(22px); background: var(--tungsten); }
+.switch input:focus-visible + i { outline: 3px solid var(--gel); outline-offset: 2px; }
+.settings-extra { display: grid; gap: 6px; padding-top: 6px; border-top: 1.5px solid var(--haze); }
+.danger { color: var(--bad); border-color: var(--bad); background: transparent; }
+
+/* ---------- play ---------- */
+.play { height: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 8px; padding-block: 8px 10px; }
+.hud { flex: none; display: flex; align-items: center; gap: 8px; min-height: 46px; }
+.hud-mid { flex: 1; min-width: 0; display: grid; gap: 5px; }
+.hud-label { font-weight: 700; font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mist); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.timer { position: relative; height: 22px; border-radius: 11px; background: var(--night-3); overflow: hidden; border: 1.5px solid var(--haze); }
+.timer-fill { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(90deg, var(--gel), var(--tungsten)); }
+.timer span { position: relative; display: block; text-align: center; font-weight: 700; font-size: 13px; line-height: 19px; color: var(--ink); font-variant-numeric: tabular-nums; text-shadow: 0 0 6px var(--pass-sheen); }
+.timer.low .timer-fill { background: var(--bad); animation: lowPulse 0.9s ease-in-out infinite; }
+@keyframes lowPulse { 50% { opacity: 0.65; } }
+.tools { display: flex; gap: 6px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.tools::-webkit-scrollbar { display: none; }
+.chip { height: 30px; padding: 0 12px; border-radius: 15px; border: 1.5px solid var(--haze); background: var(--night-2); color: var(--chalk); font-weight: 700; font-size: 14px; white-space: nowrap; }
+.chip:disabled { opacity: 0.4; }
+.hud-fans { text-align: right; min-width: 58px; }
+.hud-fans b { display: block; font-size: 19px; line-height: 1.05; font-variant-numeric: tabular-nums; color: var(--tungsten); }
+.hud-fans small { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mist); }
+.gain { position: absolute; right: calc(100% + 4px); top: 12px; font-weight: 700; font-size: 15px; color: var(--tungsten); pointer-events: none; white-space: nowrap; animation: rise 0.9s ease-out forwards; }
+@keyframes rise { to { transform: translateY(-10px); opacity: 0; } }
+.hud-fans { position: relative; }
+
+.stage {
+  position: relative; flex: 1 1 auto; min-height: 140px; border-radius: 16px; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center; align-items: stretch; gap: 10px; padding: 26px 12px 34px;
+  background: linear-gradient(180deg, var(--night-2), var(--night) 70%);
+  border: 1.5px solid var(--night-3);
+}
+.rig { position: absolute; top: 9px; left: 18px; right: 18px; display: flex; justify-content: space-between; pointer-events: none; z-index: 1; }
+.rig i { width: 9px; height: 9px; border-radius: 50%; background: var(--rig-off); transition: background 0.2s, box-shadow 0.2s; }
+.rig i.on { background: var(--tungsten); box-shadow: 0 0 9px var(--tungsten-glow), 0 14px 26px var(--tungsten-soft); }
+.rig i.on:nth-child(even) { background: var(--gel); box-shadow: 0 0 9px var(--gel-glow), 0 14px 26px var(--gel-soft); }
+.crowd { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: clamp(44px, 26%, 92px); pointer-events: none; z-index: 0; }
+.wall { position: relative; z-index: 2; padding: 14px 12px 16px; display: grid; gap: 8px; justify-items: center; text-align: center; transition: box-shadow 0.25s, border-color 0.25s; }
+.wall.hit { border-color: var(--tungsten); box-shadow: 0 0 0 2px var(--tungsten-soft), 0 0 40px var(--tungsten-soft); }
+.wall.miss { border-color: var(--bad); }
+.wall.shake { animation: shake 0.38s; }
+@keyframes shake { 20% { transform: translateX(-7px); } 45% { transform: translateX(6px); } 70% { transform: translateX(-4px); } 90% { transform: translateX(2px); } }
+.wall.enter > * { animation: wallIn 0.22s ease-out; }
+@keyframes wallIn { from { transform: translateY(6px); } to { transform: none; } }
+.q-prompt { font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tungsten); }
+.q-prompt .v { text-transform: none; letter-spacing: 0; font-size: 1.25em; }
+.q-given, .q-ask { font-size: 18px; font-weight: 700; color: var(--chalk); }
+.q-ctx { font-size: 15.5px; color: var(--mist); max-width: 34ch; line-height: 1.4; }
+.q-main { width: 100%; font-size: clamp(30px, 9.5vw, 50px); line-height: 1.25; white-space: nowrap; overflow: hidden; color: var(--chalk); text-shadow: 0 0 18px var(--dot); }
+.q-main.multi { font-size: clamp(26px, 7.6vw, 40px); line-height: 1.35; }
+.q-main.wordy { font-size: clamp(26px, 7.6vw, 38px); }
+.callout {
+  position: absolute; z-index: 4; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none;
+  padding: 10px 18px; border-radius: 14px; font: 400 clamp(26px, 8vw, 38px)/1.1 var(--display); text-align: center; white-space: nowrap;
+  max-width: calc(100% - 16px);
+}
+.callout.good { color: var(--tungsten); text-shadow: 0 0 20px var(--tungsten-glow), 0 3px 0 var(--gel-deep); animation: pop 0.6s ease-out forwards; }
+.callout.bad { color: var(--chalk); background: var(--bad); font-size: clamp(20px, 6vw, 28px); white-space: normal; animation: popStay 1.5s ease-out forwards; box-shadow: 0 8px 24px var(--amp-shadow); }
+.callout.big { color: var(--chalk); text-shadow: 0 0 26px var(--gel-glow), 0 3px 0 var(--gel-deep); animation: popStay 1.4s ease-out forwards; }
+.callout .ans { font-family: var(--body); font-weight: 700; white-space: nowrap; }
+.callout.bad .v { color: var(--chalk); text-decoration: underline; }
+.callout.bad .box { border-color: var(--chalk); background: transparent; box-shadow: none; }
+@keyframes pop { 0% { transform: translate(-50%, -50%) scale(0.7); } 25% { transform: translate(-50%, -50%) scale(1.06); } 70% { opacity: 1; } 100% { transform: translate(-50%, -62%) scale(1); opacity: 0; } }
+@keyframes popStay { 0% { transform: translate(-50%, -50%) scale(0.8); } 12% { transform: translate(-50%, -50%) scale(1.03); } 18%, 86% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
+.tape {
+  position: relative; z-index: 3; align-self: center; max-width: 94%; padding: 9px 16px; transform: rotate(-1.2deg);
+  background: var(--tape); color: var(--tape-ink); font: 400 17px/1.35 var(--marker); text-align: center;
+  box-shadow: 0 4px 12px var(--amp-shadow);
+}
+.tape .v { color: var(--tungsten); }
+.tape .box { border-color: var(--tape-ink); background: transparent; box-shadow: none; }
+.count {
+  position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; background: var(--scrim);
+}
+.count-num { font: 400 clamp(64px, 22vw, 120px)/1 var(--display); color: var(--tungsten); text-shadow: 0 0 30px var(--tungsten-glow), 0 5px 0 var(--gel-deep); }
+.count-num.pop { animation: countPop 0.42s ease-out; }
+@keyframes countPop { from { transform: scale(1.5); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+
+.amp {
+  flex: none; display: grid; gap: 8px; padding: 10px; border-radius: 16px; border: 2px solid var(--piping);
+  background-color: var(--tolex);
+  background-image: repeating-linear-gradient(45deg, var(--tolex-line) 0 1px, transparent 1px 4px), repeating-linear-gradient(-45deg, var(--tolex-line) 0 1px, transparent 1px 4px);
+  box-shadow: 0 10px 30px var(--amp-shadow);
+}
+.readout-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.lcd {
+  height: 54px; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 0 14px; overflow: hidden;
+  border-radius: 10px; background: var(--lcd); border: 1.5px solid var(--lcd-edge); box-shadow: inset 0 2px 10px var(--lcd-shadow);
+}
+.lcd.nudge { animation: shake 0.3s; }
+.r-label { font-weight: 700; font-size: 22px; color: var(--mist); white-space: nowrap; }
+.r-label .v { color: var(--gel); }
+.r-val { font-weight: 700; font-size: 32px; color: var(--tungsten); text-shadow: 0 0 14px var(--tungsten-glow); font-variant-numeric: tabular-nums; letter-spacing: 0.03em; white-space: nowrap; }
+.r-unit { font-size: 16px; font-weight: 700; color: var(--mist); }
+.caret { width: 3px; height: 28px; background: var(--tungsten); border-radius: 2px; animation: blink 1.05s steps(1) infinite; margin-left: -6px; }
+@keyframes blink { 50% { opacity: 0; } }
+.knob { width: 56px; display: grid; justify-items: center; gap: 1px; }
+.knob svg { width: 44px; height: 44px; overflow: visible; }
+.knob .tick { stroke: var(--piping); stroke-width: 1.6; stroke-linecap: round; opacity: 0.5; }
+.knob .tick.on { stroke: var(--tungsten); opacity: 1; }
+.knob .body { fill: var(--key); stroke: var(--key-shadow); stroke-width: 1.5; }
+.knob .pointer { transition: transform 0.35s cubic-bezier(.3,1.6,.5,1); transform-origin: 22px 22px; }
+.knob .pointer line { stroke: var(--key-ink); stroke-width: 3; stroke-linecap: round; }
+.knob-cap { font-weight: 700; font-size: 11px; letter-spacing: 0.08em; color: var(--piping); line-height: 1; font-variant-numeric: tabular-nums; }
+.knob-cap.hot { color: var(--tungsten); }
+.keys { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: var(--key-h); gap: 7px; }
+.keys button {
+  border: 0; border-radius: 11px; background: var(--key); color: var(--key-ink); font-weight: 700; font-size: 26px;
+  box-shadow: 0 4px 0 var(--key-shadow); touch-action: manipulation; display: grid; place-items: center; padding: 0;
+  -webkit-user-select: none; user-select: none;
+}
+.keys button:active:not(:disabled), .keys button.down { transform: translateY(3px); box-shadow: 0 1px 0 var(--key-shadow); }
+.keys button:disabled { background: var(--key-dim); color: var(--key-ink); opacity: 0.5; box-shadow: 0 2px 0 var(--key-shadow); }
+.keys svg { width: 28px; height: 28px; }
+.keys .k-play { grid-column: 4; grid-row: 2 / span 3; background: var(--tungsten); font: 400 22px/1 var(--display); box-shadow: 0 4px 0 var(--gel-deep); }
+.keys .k-zero { grid-column: 2 / span 2; }
+
+/* ---------- worked steps (setlist paper) ---------- */
+.setlist { position: relative; background: var(--paper); color: var(--ink); border-radius: 6px; padding: 22px 18px 18px; display: grid; gap: 12px; transform: rotate(-0.5deg); }
+.setlist::before, .setlist::after { content: ""; position: absolute; top: -9px; width: 70px; height: 22px; background: var(--tape); opacity: 0.9; }
+.setlist::before { left: 18px; transform: rotate(-5deg); }
+.setlist::after { right: 18px; transform: rotate(4deg); }
+.sl-title { font: 400 24px/1.1 var(--marker); color: var(--ink); }
+.qblock { display: grid; gap: 4px; }
+.qblock .qb-ctx { font-size: 14.5px; color: var(--ink-soft); }
+.qblock .qb-main { font-size: clamp(22px, 6.4vw, 28px); line-height: 1.3; overflow-x: auto; }
+.setlist .v, .fix .v { color: var(--gel-ink); }
+.setlist .box, .fix .box { border-color: var(--ink); background: transparent; box-shadow: none; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: s; }
+.steps li { display: grid; grid-template-columns: 28px minmax(0, 1fr); column-gap: 8px; padding: 9px 0; border-top: 1.5px dashed var(--perf); counter-increment: s; }
+.steps li::before { content: counter(s); grid-row: span 2; font: 400 18px/1.4 var(--marker); color: var(--gel-ink); }
+.steps .s-m { font-size: clamp(19px, 5.4vw, 23px); line-height: 1.35; overflow-wrap: anywhere; }
+.steps .s-n { font-size: 14.5px; color: var(--ink-soft); line-height: 1.35; }
+.steps li:last-child .s-m { color: var(--ink); }
+.steps-actions { display: grid; gap: 10px; }
+
+/* ---------- results: backstage pass ---------- */
+.results { padding-block: 22px 44px; display: flex; flex-direction: column; gap: 20px; align-items: stretch; }
+.pass-wrap { display: grid; justify-items: center; padding-top: 6px; }
+.pass {
+  position: relative; width: min(100%, 340px); border-radius: 18px; background: var(--pass); color: var(--ink);
+  padding: 46px 20px 20px; display: grid; gap: 10px; text-align: center; transform: rotate(-1.5deg);
+  box-shadow: 0 16px 40px var(--amp-shadow); overflow: hidden; animation: passDrop 0.75s cubic-bezier(.2,.9,.3,1.15);
+}
+.pass::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, var(--pass-sheen) 45%, transparent 60%); pointer-events: none; }
+@keyframes passDrop { 0% { transform: translateY(-70px) rotate(-8deg); } 60% { transform: translateY(6px) rotate(1.5deg); } 100% { transform: rotate(-1.5deg); } }
+.pass-hole { position: absolute; top: 14px; left: 50%; width: 64px; height: 12px; margin-left: -32px; border-radius: 6px; background: var(--night); }
+.pass-type { margin: 0 -20px; padding: 8px 0; font-weight: 700; font-size: 15px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink); background: var(--tungsten); }
+.pass-type.t0 { background: var(--pass-guest); color: var(--pass); }
+.pass-type.t2 { background: var(--gel); color: var(--pass); }
+.pass-type.t3 { background: linear-gradient(90deg, var(--tungsten), var(--gel)); color: var(--pass); }
+.pass-band { font: 400 clamp(26px, 8vw, 32px)/1.05 var(--display); text-wrap: balance; overflow-wrap: anywhere; }
+.pass-venue { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+.pass-score { display: flex; align-items: baseline; justify-content: center; gap: 8px; }
+.pass-score b { font-size: 64px; line-height: 1; font-variant-numeric: tabular-nums; }
+.pass-score span { font-size: 18px; color: var(--ink-soft); font-weight: 700; }
+.pass-picks { display: flex; justify-content: center; gap: 8px; color: var(--ink); }
+.pass-picks .pk { width: 34px; height: 38px; }
+.pass-picks .pk.on { animation: pickIn 0.4s cubic-bezier(.3,1.8,.5,1) both; }
+@keyframes pickIn { from { transform: scale(0.3) rotate(-30deg); } to { transform: none; } }
+.pass-stats { display: grid; grid-template-columns: repeat(3, 1fr); margin: 4px 0 0; border-top: 1.5px dashed var(--perf); padding-top: 12px; }
+.pass-stats div { display: grid; gap: 2px; }
+.pass-stats dt { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.pass-stats dd { margin: 0; font-weight: 700; font-size: 20px; font-variant-numeric: tabular-nums; }
+.news { display: grid; gap: 8px; }
+.news p { padding: 12px 14px; border-radius: 12px; background: var(--night-2); border: 1.5px solid var(--haze); font-size: 15.5px; }
+.news p.hot { border-color: var(--tungsten); color: var(--chalk); }
+.res-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.res-actions .wide { grid-column: 1 / -1; }
+.fixes { display: grid; gap: 12px; }
+.fixes h3 { font: 400 26px/1.1 var(--display); color: var(--chalk); }
+.fix-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.fix { background: var(--paper); color: var(--ink); border-radius: 10px; padding: 14px 16px; display: grid; gap: 8px; }
+.fix .qb-main { font-size: clamp(20px, 6vw, 25px); }
+.fix-a { font-size: 15px; color: var(--ink-soft); }
+.fix-a b { color: var(--ink); }
+.fix-a s { color: var(--gel-ink); }
+.fix summary { cursor: pointer; font-weight: 700; color: var(--gel-ink); font-size: 15px; padding: 4px 0; }
+.fix details[open] summary { margin-bottom: 4px; }
+.fix .steps li:first-child { border-top: 0; }
+
+.toast {
+  position: fixed; z-index: 60; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  width: max-content; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px;
+  background: var(--chalk); color: var(--ink); font-weight: 700; font-size: 15px; box-shadow: 0 10px 30px var(--amp-shadow);
+  animation: toastIn 0.25s ease-out;
+}
+@keyframes toastIn { from { transform: translate(-50%, 14px); } to { transform: translateX(-50%); } }
+
+/* ---------- Android app only ---------- */
+html.app, html.app body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+html.app input, html.app .selectable { -webkit-user-select: text; user-select: text; }
+.grown-btn {
+  justify-self: center; margin: 0 auto; min-height: 44px; padding: 8px 18px; border-radius: 22px;
+  border: 1.5px solid var(--haze); background: transparent; color: var(--mist); font-weight: 700; font-size: 14px; letter-spacing: 0.04em;
+}
+.info-sec { display: grid; gap: 8px; }
+.info-sec h3 { font-weight: 700; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--tungsten); }
+.info-sec p, .info-sec li { font-size: 15.5px; color: var(--chalk); line-height: 1.5; }
+.info-sec ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.info-nights { list-style: none; margin: 0; padding: 0; border-top: 1.5px solid var(--haze); }
+.info-nights li { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; padding: 8px 0; border-bottom: 1.5px solid var(--haze); }
+.info-nights b { font-size: 15px; color: var(--chalk); }
+.info-nights span { font-size: 13px; font-weight: 700; color: var(--tungsten); white-space: nowrap; }
+.info-nights em { grid-column: 1 / -1; font-style: normal; font-size: 14px; color: var(--mist); }
+.info-small { font-size: 13.5px; color: var(--mist); }
+.info-sec .info-small { color: var(--mist); font-size: 13.5px; }
+
+/* ---------- small and wide screens ---------- */
+@media (max-height: 700px) {
+  .play { gap: 6px; padding-block: 6px 8px; }
+  .stage { padding: 22px 10px 26px; gap: 6px; }
+  .wall { padding: 10px 10px 12px; gap: 5px; }
+  .q-ctx { font-size: 14px; }
+  .q-given, .q-ask { font-size: 16px; }
+  .lcd { height: 48px; }
+  .r-val { font-size: 28px; }
+  .amp { padding: 8px; gap: 6px; }
+  .keys { gap: 6px; }
+}
+@media (min-width: 760px) {
+  .tour { padding-top: 22px; }
+  .play { padding-block: 14px 18px; }
+}
+@media (orientation: landscape) and (max-height: 540px) {
+  .play { max-width: 980px; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); column-gap: 12px; }
+  .hud { grid-column: 1 / -1; }
+  .stage { grid-column: 1; grid-row: 2; }
+  .amp { grid-column: 2; grid-row: 2; align-content: start; }
+  :root { --key-h: clamp(36px, 10.5vh, 52px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lights::before, .lights::after, .timer.low .timer-fill, .caret { animation: none; }
+  .wall.shake, .lcd.nudge, .pass, .pass-picks .pk.on, .count-num.pop, .wall.enter > *, .sheet-card, .toast { animation: none; }
+  .callout.good, .callout.bad, .callout.big { animation-name: fadeOnly; }
+  @keyframes fadeOnly { 0%, 80% { opacity: 1; } 100% { opacity: 0; } }
+}
+</style>
+</head>
+<body>
+
+<div class="lights" aria-hidden="true"></div>
+
+<div id="app">
+  <!-- ================= TOUR ================= -->
+  <section id="tour" class="screen tour" aria-labelledby="posterBand">
+    <div class="tour-top">
+      <div class="wordmark">
+        <svg class="wm-x" viewBox="0 0 20 22" aria-hidden="true"><path d="M10 21.2C6.2 17.6 1.4 12 1.4 6.6 1.4 3.1 5 1 10 1s8.6 2.1 8.6 5.6c0 5.4-4.8 11-8.6 14.6Z" style="fill: var(--gel)"/><path d="M15.1 6.722Q15.1 7.026 15.004 7.346Q14.828 7.889 14.484 8.161Q14.141 8.433 13.709 8.433Q13.197 8.433 12.718 8.097L11.918 8.848Q12.318 9.936 12.574 10.463Q12.83 10.991 12.99 11.143Q13.15 11.295 13.357 11.295Q13.469 11.295 13.645 11.207Q13.821 11.119 13.917 11.119Q14.013 11.119 14.077 11.207Q14.141 11.295 14.141 11.438Q14.141 11.518 14.109 11.678Q13.981 12.222 13.565 12.669Q13.15 13.117 12.574 13.381Q11.998 13.645 11.407 13.645Q10.815 13.645 10.384 13.493Q9.952 13.341 9.504 12.813Q9.057 12.286 8.593 11.231L8.193 12.126Q7.81 12.973 7.418 13.317Q7.026 13.661 6.499 13.661Q5.795 13.661 5.348 13.213Q4.9 12.765 4.9 12.078Q4.9 11.758 4.996 11.454Q5.172 10.911 5.516 10.639Q5.859 10.367 6.291 10.367Q6.803 10.367 7.282 10.703L8.082 9.952Q7.698 8.864 7.458 8.329Q7.218 7.793 7.05 7.641Q6.882 7.489 6.675 7.489Q6.563 7.489 6.395 7.577Q6.227 7.665 6.131 7.665Q5.891 7.665 5.891 7.33Q5.891 7.282 5.923 7.122Q6.131 6.29 6.93 5.715Q7.73 5.139 8.641 5.139Q9.217 5.139 9.656 5.315Q10.096 5.491 10.536 6.019Q10.975 6.546 11.423 7.553L11.871 6.546Q12.222 5.779 12.606 5.459Q12.99 5.139 13.565 5.139Q14.237 5.139 14.668 5.595Q15.1 6.051 15.1 6.722Z" style="fill: var(--night)"/></svg>
+        <span>Rock the Unknown</span>
+      </div>
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="Band settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3v18M12 3v18M18 3v18"/><rect x="3.5" y="13" width="5" height="3.6" rx="1" fill="currentColor" stroke="none"/><rect x="9.5" y="6" width="5" height="3.6" rx="1" fill="currentColor" stroke="none"/><rect x="15.5" y="10" width="5" height="3.6" rx="1" fill="currentColor" stroke="none"/></svg>
+      </button>
+    </div>
+
+    <div class="poster">
+      <div class="kicker">On tour now</div>
+      <h1 class="poster-band" id="posterBand">Your band</h1>
+      <div class="tour-line" id="tourLine">Algebra world tour · 9 nights</div>
+      <div class="player" id="playerLine"></div>
+    </div>
+
+    <div class="scoreboard" aria-label="Tour stats">
+      <div><span class="sb-n" id="sbFans">0</span><span class="sb-l">Fans</span></div>
+      <div><span class="sb-n" id="sbPicks">0<small>/27</small></span><span class="sb-l">Picks</span></div>
+      <div class="sb-status"><span class="sb-l">Rock status</span><span class="sb-n" id="sbStatus">Bedroom strummer</span><div class="meter"><i id="sbMeter"></i></div><span class="sb-next" id="sbNext"></span></div>
+    </div>
+
+    <ol class="tickets" id="tickets" aria-label="Tour nights"></ol>
+
+    <p class="tour-foot">Each night is a different bit of algebra, roughly in the order schools in England teach it, from Year 3 missing numbers to Year 9 equations. Earn a pick on one night to unlock the next.</p>
+    <button class="grown-btn" id="grownBtn" type="button" hidden>For grown-ups</button>
+  </section>
+
+  <!-- ================= PLAY ================= -->
+  <section id="play" class="screen play" hidden aria-label="On stage">
+    <div class="hud">
+      <button class="icon-btn" id="quitBtn" type="button" aria-label="Leave the stage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+      <div class="hud-mid">
+        <div class="hud-label" id="hudLabel">Night 1 · The Bedroom</div>
+        <div class="timer" id="timer"><div class="timer-fill" id="timerFill"></div><span id="timerText">1:00</span></div>
+        <div class="tools" id="tools" hidden>
+          <button class="chip" id="tipBtn" type="button">Roadie tip</button>
+          <button class="chip" id="howBtn" type="button">Show me</button>
+          <button class="chip" id="skipBtn" type="button">Skip</button>
+        </div>
+      </div>
+      <div class="hud-fans" aria-live="off"><b id="hudFans">0</b><small>fans</small></div>
+      <button class="icon-btn" id="muteBtn" type="button" aria-label="Sound on" aria-pressed="false"></button>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="rig" id="rig" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="wall led" id="wall">
+        <div class="q-prompt" id="qPrompt"></div>
+        <div class="q-given math" id="qGiven" hidden></div>
+        <div class="q-ctx" id="qCtx" hidden></div>
+        <div class="q-main math" id="qMain"></div>
+        <div class="q-ask math" id="qAsk" hidden></div>
+      </div>
+      <div class="tape" id="tip" hidden></div>
+      <div class="callout" id="callout" hidden></div>
+      <canvas class="crowd" id="crowd" aria-hidden="true"></canvas>
+      <div class="count" id="count" hidden><div class="count-num" id="countNum">1</div></div>
+      <p class="sr" id="live" aria-live="assertive" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap"></p>
+    </div>
+
+    <div class="amp">
+      <div class="readout-row">
+        <div class="lcd" id="lcd" aria-live="polite"><span class="r-label math" id="rLabel"></span><span class="r-val" id="rVal"></span><span class="caret" aria-hidden="true"></span><span class="r-unit" id="rUnit"></span></div>
+        <div class="knob" aria-hidden="true">
+          <svg viewBox="0 0 44 44"><g id="knobTicks"></g><circle class="body" cx="22" cy="22" r="13"/><g class="pointer" id="knobPointer"><line x1="22" y1="22" x2="22" y2="12"/></g></svg>
+          <span class="knob-cap" id="knobCap">VOL 0</span>
+        </div>
+      </div>
+      <div class="keys" id="keys">
+        <button type="button" data-k="1">1</button>
+        <button type="button" data-k="2">2</button>
+        <button type="button" data-k="3">3</button>
+        <button type="button" data-k="back" aria-label="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5h11v14H9l-6-7Z"/><path d="m12.5 9.5 5 5m0-5-5 5"/></svg></button>
+        <button type="button" data-k="4">4</button>
+        <button type="button" data-k="5">5</button>
+        <button type="button" data-k="6">6</button>
+        <button type="button" data-k="enter" class="k-play" aria-label="Play it">Play</button>
+        <button type="button" data-k="7">7</button>
+        <button type="button" data-k="8">8</button>
+        <button type="button" data-k="9">9</button>
+        <button type="button" data-k="neg" id="keyNeg" aria-label="Minus sign">&minus;</button>
+        <button type="button" data-k="0" class="k-zero">0</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESULTS ================= -->
+  <section id="results" class="screen results" hidden aria-labelledby="passBand">
+    <div class="pass-wrap">
+      <div class="pass" id="pass">
+        <div class="pass-hole" aria-hidden="true"></div>
+        <div class="pass-type" id="passType">Crew</div>
+        <h2 class="pass-band" id="passBand">Band</h2>
+        <div class="pass-venue" id="passVenue"></div>
+        <div class="pass-score"><b id="passRight">0</b><span>right</span></div>
+        <div class="pass-picks" id="passPicks"></div>
+        <dl class="pass-stats">
+          <div><dt>Fans</dt><dd id="passFans">+0</dd></div>
+          <div><dt>Top vol</dt><dd id="passVol">0</dd></div>
+          <div><dt>Bum notes</dt><dd id="passWrong">0</dd></div>
+        </dl>
+      </div>
+    </div>
+    <div class="news" id="news"></div>
+    <div class="res-actions">
+      <button class="btn primary wide" id="againBtn" type="button">Encore! Play again</button>
+      <button class="btn" id="resPractice" type="button">Soundcheck</button>
+      <button class="btn ghost" id="resTour" type="button">Back to the tour</button>
+    </div>
+    <section class="fixes" id="fixes" hidden aria-labelledby="fixTitle">
+      <h3 id="fixTitle">Bum notes to fix</h3>
+      <ol class="fix-list" id="fixList"></ol>
+    </section>
+  </section>
+</div>
+
+<!-- ================= SHEETS ================= -->
+<div class="sheet" id="venueSheet" role="dialog" aria-modal="true" aria-labelledby="vsName" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head">
+      <div style="display:grid;gap:6px;min-width:0">
+        <div class="meta" id="vsMeta">Night 1</div>
+        <h2 id="vsName">The Bedroom</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <p class="vs-skill" id="vsSkill"></p>
+    <p class="vs-blurb" id="vsBlurb"></p>
+    <div class="vs-example led math" id="vsExample"></div>
+    <p class="vs-goal" id="vsGoal"></p>
+    <p class="vs-best" id="vsBest"></p>
+    <p class="vs-lock" id="vsLock" hidden></p>
+    <div class="vs-actions">
+      <button class="btn primary" id="vsPlay" type="button">Play the gig</button>
+      <button class="btn" id="vsPractice" type="button">Soundcheck</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="bandSheet" role="dialog" aria-modal="true" aria-labelledby="bandTitle" hidden>
+  <form class="sheet-card" id="bandForm" novalidate>
+    <div class="sheet-head">
+      <div style="display:grid;gap:6px;min-width:0">
+        <div class="meta" id="bandMeta">Before the first gig</div>
+        <h2 id="bandTitle">Form your band</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close id="bandClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="field">
+      <label for="bandInput">Band name</label>
+      <div class="name-row">
+        <input id="bandInput" name="band" maxlength="28" autocomplete="off" spellcheck="false">
+        <button class="icon-btn" type="button" id="diceBtn" aria-label="Pick a random band name">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><g fill="currentColor"><circle cx="8.3" cy="8.3" r="1.6"/><circle cx="15.7" cy="8.3" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="8.3" cy="15.7" r="1.6"/><circle cx="15.7" cy="15.7" r="1.6"/></g></svg>
+        </button>
+      </div>
+    </div>
+    <fieldset>
+      <legend>Your instrument</legend>
+      <div class="choice-grid" id="instGrid"></div>
+    </fieldset>
+    <fieldset>
+      <legend>School year</legend>
+      <div class="year-grid" id="yearGrid"></div>
+      <p class="note">This opens the nights that match. Play well to unlock the rest.</p>
+    </fieldset>
+    <div class="settings-extra" id="settingsExtra" hidden>
+      <label class="switch-row" for="sfxToggle"><span>Sound effects</span><span class="switch"><input type="checkbox" id="sfxToggle"><i></i></span></label>
+      <label class="switch-row" for="beatToggle"><span>Drum beat during gigs</span><span class="switch"><input type="checkbox" id="beatToggle"><i></i></span></label>
+      <button class="btn danger" type="button" id="resetBtn">Start the tour again</button>
+    </div>
+    <button class="btn primary" type="submit" id="bandSubmit">Start the tour</button>
+  </form>
+</div>
+
+<div class="sheet" id="stepsSheet" role="dialog" aria-modal="true" aria-labelledby="slTitle" hidden>
+  <div class="sheet-card">
+    <div class="setlist">
+      <div class="sl-title" id="slTitle">How to play it</div>
+      <div class="qblock" id="slQ"></div>
+      <ol class="steps" id="slSteps"></ol>
+    </div>
+    <div class="steps-actions">
+      <button class="btn primary" type="button" id="stepsNext">Got it. Next one</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="pauseSheet" role="dialog" aria-modal="true" aria-labelledby="pauseTitle" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><h2 id="pauseTitle">Leave the stage?</h2></div>
+    <p class="vs-blurb" id="pauseText">The clock is stopped. If you leave now, this set will not count.</p>
+    <div class="vs-actions">
+      <button class="btn primary" type="button" id="resumeBtn">Keep playing</button>
+      <button class="btn" type="button" id="leaveBtn">Leave the stage</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="infoSheet" role="dialog" aria-modal="true" aria-labelledby="infoTitle" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head">
+      <div style="display:grid;gap:6px;min-width:0">
+        <div class="meta">About the game</div>
+        <h2 id="infoTitle">For grown-ups</h2>
+      </div>
+      <button class="icon-btn" type="button" data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <section class="info-sec">
+      <h3>What it practises</h3>
+      <p>Nine nights of algebra, in roughly the order schools in England teach it. The school year chosen in band settings opens the matching nights. The rest unlock as your child earns picks.</p>
+      <ol class="info-nights" id="infoNights"></ol>
+    </section>
+    <section class="info-sec">
+      <h3>How it works</h3>
+      <ul>
+        <li><b>Gigs</b> are timed sets. Right answers win fans, and a run of right answers turns up the volume for bonus fans.</li>
+        <li><b>Soundcheck</b> has no clock. It offers a tip, and after two wrong tries it shows the method step by step.</li>
+        <li>After each gig, wrong answers are listed with the worked method.</li>
+      </ul>
+    </section>
+    <section class="info-sec" aria-labelledby="ppTitle">
+      <h3 id="ppTitle">Privacy policy</h3>
+      <p>Rock the Unknown is made by <span class="selectable" id="infoDev">its developer</span>. This policy was last updated on <span id="infoDate">5 November 2026</span>.</p>
+      <p><b>We collect nothing.</b> The app has no accounts, no ads, no analytics and no in-app purchases. It asks for no permissions and cannot connect to the internet.</p>
+      <p><b>What stays on this device.</b> The band name, instrument, school year, fans, picks and best scores are saved in the app's private storage on this device so the game remembers progress. Other apps cannot read it, it is left out of cloud backups, and it is never sent to us or anyone else.</p>
+      <p><b>Deleting it.</b> Use "Start the tour again" in band settings, clear the app's storage in Android settings, or uninstall the app.</p>
+      <p><b>Children.</b> The game is made for children. Because it collects no personal information, there is nothing to share with anyone.</p>
+      <p><b>Changes.</b> If this ever changes, we will update this policy before releasing the new version.</p>
+      <p><b>Contact.</b> <span class="selectable" id="infoEmail">See the app's Google Play listing.</span></p>
+    </section>
+    <section class="info-sec">
+      <h3>Credits</h3>
+      <p class="info-small">Fonts: Atkinson Hyperlegible by the Braille Institute and Shrikhand by Jonny Pinhorn, both under the SIL Open Font Licence 1.1, and Permanent Marker by Font Diner under the Apache Licence 2.0. Copies of the licences are included in the app. All sounds are made by the app as it plays.</p>
+      <p class="info-small" id="infoVersion"></p>
+    </section>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+/* Rock the Unknown: question bank.
+   Pure functions, no DOM. The page inlines this file; the test harness requires it. */
+(function (root) {
+  'use strict';
+
+  // ---------- randomness ----------
+  let rnd = Math.random;
+  function seed(s) {
+    let a = s >>> 0;
+    rnd = function () {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function unseed() { rnd = Math.random; }
+  const R = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+  const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
+  const chance = (p) => rnd() < p;
+  function choose(list) {
+    let total = 0;
+    for (const item of list) total += item[0];
+    let r = rnd() * total;
+    for (const item of list) { r -= item[0]; if (r < 0) return item[1]; }
+    return list[list.length - 1][1];
+  }
+  const gcd = (a, b) => (b === 0 ? Math.abs(a) : gcd(b, a % b));
+
+  // ---------- notation ----------
+  const MINUS = '−', TIMES = '×', DIV = '÷';
+  const P = ' + ', M = ' ' + MINUS + ' ', T = ' ' + TIMES + ' ', D = ' ' + DIV + ' ';
+  const LETTERS = ['x', 'y', 'n', 'a', 'm', 'p', 'k', 't', 'w'];
+
+  const num = (n) => (n < 0 ? MINUS + Math.abs(n) : String(n));
+  const v = (l) => '<i class="v">' + l + '</i>';
+  const BOX = '<span class="box"></span>';
+  const frac = (top, bottom) => '<span class="frac"><span class="ft">' + top + '</span><span class="fb">' + bottom + '</span></span>';
+  const sq = (x) => x + '<sup>2</sup>';
+  const lines = (...ls) => ls.map((l) => '<span class="ml">' + l + '</span>').join('');
+
+  function term(c, x) {            // a leading term: x, −x, 3x
+    if (c === 1) return x;
+    if (c === -1) return MINUS + x;
+    return num(c) + x;
+  }
+  function sterm(c, x) {           // a following term with its sign: + x, − 3x
+    const a = Math.abs(c);
+    return (c < 0 ? M : P) + (a === 1 ? x : a + x);
+  }
+  const sgn = (n) => (n < 0 ? M + Math.abs(n) : P + n);
+  const lin = (a, x, b) => term(a, x) + (b === 0 ? '' : sgn(b));
+  function two() {
+    const a = pick(LETTERS);
+    let b = pick(LETTERS);
+    while (b === a) b = pick(LETTERS);
+    return [a, b];
+  }
+  function ord(n) {
+    const s = n % 100;
+    if (s >= 11 && s <= 13) return n + 'th';
+    return n + ({ 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th');
+  }
+  const jumpText = (d) => (d > 0 ? '+' + d : MINUS + Math.abs(d));
+
+  function Q(o) {
+    o.key = [o.prompt, o.given || '', o.ctx || '', o.html].join('|');
+    return o;
+  }
+
+  // ======================================================================
+  // Night 1: The Bedroom. Missing numbers.
+  // ======================================================================
+  function bedroom() {
+    const ask = 'What goes in the box?', L = BOX + ' =';
+    return choose([
+      [3, () => {
+        const x = R(3, 45), a = R(3, 30), c = x + a, flip = chance(0.4);
+        return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+          html: (flip ? a + P + BOX : BOX + P + a) + ' = ' + c,
+          hint: flip ? `What do you add to ${a} to make ${c}?` : `Work backwards. Take ${a} away from ${c}.`,
+          steps: [
+            { m: `${BOX} = ${c}${M}${a}`, n: `Adding ${a} is undone by taking ${a} away.`, k: 'eq' },
+            { m: `${BOX} = ${x}`, k: 'eq' }] });
+      }],
+      [3, () => {
+        if (chance(0.55)) {
+          const c = R(2, 40), a = R(3, 30), x = c + a;
+          return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+            html: `${BOX}${M}${a} = ${c}`,
+            hint: `Work backwards. Add the ${a} back on to ${c}.`,
+            steps: [
+              { m: `${BOX} = ${c}${P}${a}`, n: `Taking away ${a} is undone by adding ${a}.`, k: 'eq' },
+              { m: `${BOX} = ${x}`, k: 'eq' }] });
+        }
+        const a = R(20, 70), x = R(3, a - 3), c = a - x;
+        return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+          html: `${a}${M}${BOX} = ${c}`,
+          hint: `How far is it from ${c} up to ${a}?`,
+          steps: [
+            { m: `${BOX} = ${a}${M}${c}`, n: `The box is the gap between ${c} and ${a}.`, k: 'eq' },
+            { m: `${BOX} = ${x}`, k: 'eq' }] });
+      }],
+      [3, () => {
+        const x = R(2, 12), a = R(2, 12), c = x * a, flip = chance(0.4);
+        return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+          html: (flip ? a + T + BOX : BOX + T + a) + ' = ' + c,
+          hint: `Which number times ${a} makes ${c}?`,
+          steps: [
+            { m: `${BOX} = ${c}${D}${a}`, n: `Times ${a} is undone by dividing by ${a}.`, k: 'eq' },
+            { m: `${BOX} = ${x}`, k: 'eq' }] });
+      }],
+      [2, () => {
+        if (chance(0.6)) {
+          const a = R(2, 10), c = R(2, 12), x = a * c;
+          return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+            html: `${BOX}${D}${a} = ${c}`,
+            hint: `Work backwards. What is ${c} ${TIMES} ${a}?`,
+            steps: [
+              { m: `${BOX} = ${c}${T}${a}`, n: `Dividing by ${a} is undone by times ${a}.`, k: 'eq' },
+              { m: `${BOX} = ${x}`, k: 'eq' }] });
+        }
+        const x = R(2, 10), c = R(2, 10), a = x * c;
+        return Q({ kind: 'eq', unknown: '□', prompt: ask, label: L, answer: x,
+          html: `${a}${D}${BOX} = ${c}`,
+          hint: `What times ${c} makes ${a}?`,
+          steps: [
+            { m: `${BOX} = ${a}${D}${c}`, n: `If ${a} ${DIV} the box is ${c}, then ${c} ${TIMES} the box is ${a}.`, k: 'eq' },
+            { m: `${BOX} = ${x}`, k: 'eq' }] });
+      }],
+    ])();
+  }
+
+  // ======================================================================
+  // Night 2: The Garage. Letters for numbers (one step).
+  // ======================================================================
+  function garage() {
+    const l = pick(LETTERS), X = v(l), L = X + ' =', prompt = 'Find ' + X;
+    return choose([
+      [3, () => {
+        const s = R(2, 30), a = R(2, 25), c = s + a, form = R(0, 2);
+        if (form === 2) {
+          return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+            html: `${c} = ${X}${P}${a}`,
+            hint: `Subtract ${a} from both sides to get ${X} on its own.`,
+            steps: [
+              { m: `${c}${M}${a} = ${X}`, n: `Subtract ${a} from both sides.`, k: 'eq' },
+              { m: `${X} = ${s}`, k: 'eq' }] });
+        }
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: (form ? a + P + X : X + P + a) + ' = ' + c,
+          hint: `Subtract ${a} from both sides to get ${X} on its own.`,
+          steps: [
+            { m: `${X} = ${c}${M}${a}`, n: `Subtract ${a} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, k: 'eq' }] });
+      }],
+      [3, () => {
+        const c = R(2, 30), a = R(2, 20), s = c + a;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${X}${M}${a} = ${c}`,
+          hint: `Undo the ${MINUS} ${a}. Add ${a} to both sides.`,
+          steps: [
+            { m: `${X} = ${c}${P}${a}`, n: `Add ${a} to both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, k: 'eq' }] });
+      }],
+      [3, () => {
+        const a = R(2, 12), s = R(2, 12), c = a * s;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}${X} = ${c}`,
+          hint: `${a}${X} means ${a} ${TIMES} ${X}. Which number times ${a} makes ${c}?`,
+          steps: [
+            { m: `${X} = ${c}${D}${a}`, n: `${a}${X} means ${a} ${TIMES} ${X}, so divide both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 10), c = R(2, 12), s = a * c;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${X}${D}${a} = ${c}`,
+          hint: `Undo the ${DIV} ${a}. Multiply both sides by ${a}.`,
+          steps: [
+            { m: `${X} = ${c}${T}${a}`, n: `Multiply both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, k: 'eq' }] });
+      }],
+    ])();
+  }
+
+  // ======================================================================
+  // Night 3: Village Hall. Formulae, substitution, two-number puzzles.
+  // ======================================================================
+  function subOne() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 9), val = R(2, 10);
+    let b = R(1, 15) * (chance(0.35) ? -1 : 1);
+    if (a * val + b <= 0) b = Math.abs(b);
+    const ans = a * val + b;
+    return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${val}`, label: '=', answer: ans,
+      html: lin(a, X, b),
+      hint: `${a}${X} means ${a} ${TIMES} ${X}. Swap ${X} for ${val}.`,
+      steps: [
+        { m: `${a}${T}${val}${sgn(b)}`, n: `Swap ${X} for ${val}. ${a}${X} means ${a} ${TIMES} ${X}.`, k: 'val' },
+        { m: `${a * val}${sgn(b)}`, n: 'Do the times first.', k: 'val' },
+        { m: String(ans), k: 'val' }] });
+  }
+
+  function subTwo() {
+    const [p, q] = two(), Pv = v(p), Qv = v(q);
+    const pv = R(2, 9), qv = R(2, 9), c = R(2, 6), d = R(2, 5);
+    const given = `If ${Pv} = ${pv} and ${Qv} = ${qv}`;
+    const swap = `Swap ${Pv} for ${pv} and ${Qv} for ${qv}.`;
+    const forms = [
+      () => ({ html: `${c}${Pv}${P}${Qv}`, ans: c * pv + qv,
+        hint: `${c}${Pv} means ${c} ${TIMES} ${Pv}.`,
+        steps: [`${c}${T}${pv}${P}${qv}`, `${c * pv}${P}${qv}`] }),
+      () => (c * pv <= qv ? null : { html: `${c}${Pv}${M}${Qv}`, ans: c * pv - qv,
+        hint: `${c}${Pv} means ${c} ${TIMES} ${Pv}. Do the times before the take away.`,
+        steps: [`${c}${T}${pv}${M}${qv}`, `${c * pv}${M}${qv}`] }),
+      () => ({ html: `${Pv}${Qv}`, ans: pv * qv,
+        hint: `${Pv}${Qv} means ${Pv} ${TIMES} ${Qv}.`,
+        steps: [`${pv}${T}${qv}`] }),
+      () => ({ html: `${c}${Pv}${P}${d}${Qv}`, ans: c * pv + d * qv,
+        hint: 'Do both times first, then add.',
+        steps: [`${c}${T}${pv}${P}${d}${T}${qv}`, `${c * pv}${P}${d * qv}`] }),
+    ];
+    let f = null;
+    while (!f) f = pick(forms)();
+    const steps = f.steps.map((m, i) => ({ m, n: i === 0 ? swap : '', k: 'val' }));
+    steps.push({ m: String(f.ans), k: 'val' });
+    return Q({ kind: 'eval', prompt: 'Work it out', given, label: '=', answer: f.ans, html: f.html, hint: f.hint, steps });
+  }
+
+  const FORMULAS = [
+    () => {
+      const p = R(5, 15), f = R(1, 4), n = R(2, 8), ans = p * n + f, V = v('n'), S = v('C');
+      return { ctx: `Gig tickets cost £${p} each, plus a £${f} booking fee. For ${V} tickets the cost in pounds is`,
+        html: `${S} = ${p}${V}${P}${f}`, ask: `Find ${S} when ${V} = ${n}`, label: `${S} = £`, unit: '', answer: ans,
+        hint: `Swap ${V} for ${n}. ${p}${V} means ${p} ${TIMES} ${V}.`,
+        steps: [
+          { m: `${S} = ${p}${T}${n}${P}${f}`, n: `Swap ${V} for ${n}.`, k: 'eq' },
+          { m: `${S} = ${p * n}${P}${f}`, n: 'Times first, then add.', k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const p = R(8, 20), t = R(2, 9), ans = p * t, V = v('t'), S = v('M');
+      return { ctx: `Band T-shirts cost £${p} each. For ${V} T-shirts the money taken in pounds is`,
+        html: `${S} = ${p}${V}`, ask: `Find ${S} when ${V} = ${t}`, label: `${S} = £`, unit: '', answer: ans,
+        hint: `${p}${V} means ${p} ${TIMES} ${V}.`,
+        steps: [
+          { m: `${S} = ${p}${T}${t}`, n: `Swap ${V} for ${t}.`, k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const s = R(3, 5), e = R(4, 12), n = R(6, 14), ans = s * n + e, V = v('n'), S = v('T');
+      return { ctx: `Each song lasts ${s} minutes, plus ${e} minutes for the encore. For ${V} songs the set time in minutes is`,
+        html: `${S} = ${s}${V}${P}${e}`, ask: `Find ${S} when ${V} = ${n}`, label: `${S} =`, unit: 'min', answer: ans,
+        hint: `Swap ${V} for ${n}. Times first, then add.`,
+        steps: [
+          { m: `${S} = ${s}${T}${n}${P}${e}`, n: `Swap ${V} for ${n}.`, k: 'eq' },
+          { m: `${S} = ${s * n}${P}${e}`, n: 'Times first, then add.', k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const g = pick([20, 25, 30, 40, 50]), f = R(1, 9) * 10, n = R(2, 9), ans = g * n + f, V = v('n'), S = v('F');
+      return { ctx: `The band starts with ${f} fans and gains ${g} more at every gig. After ${V} gigs the number of fans is`,
+        html: `${S} = ${g}${V}${P}${f}`, ask: `Find ${S} when ${V} = ${n}`, label: `${S} =`, unit: 'fans', answer: ans,
+        hint: `Swap ${V} for ${n}. Times first, then add.`,
+        steps: [
+          { m: `${S} = ${g}${T}${n}${P}${f}`, n: `Swap ${V} for ${n}.`, k: 'eq' },
+          { m: `${S} = ${g * n}${P}${f}`, n: 'Times first, then add.', k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const s0 = R(5, 8) * 10, b = R(2, 5), n = R(2, 8), ans = s0 - b * n, V = v('n'), S = v('S');
+      return { ctx: `The drummer starts the tour with ${s0} sticks and snaps ${b} at every gig. After ${V} gigs the sticks left are`,
+        html: `${S} = ${s0}${M}${b}${V}`, ask: `Find ${S} when ${V} = ${n}`, label: `${S} =`, unit: 'sticks', answer: ans,
+        hint: `Swap ${V} for ${n}. Do the times before the take away.`,
+        steps: [
+          { m: `${S} = ${s0}${M}${b}${T}${n}`, n: `Swap ${V} for ${n}.`, k: 'eq' },
+          { m: `${S} = ${s0}${M}${b * n}`, n: 'Times before take away.', k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+    () => {
+      const sp = pick([30, 40, 45, 50, 60]), h = R(2, 6), ans = sp * h, V = v('h'), S = v('D');
+      return { ctx: `The tour bus drives at ${sp} miles an hour. In ${V} hours the distance in miles is`,
+        html: `${S} = ${sp}${V}`, ask: `Find ${S} when ${V} = ${h}`, label: `${S} =`, unit: 'miles', answer: ans,
+        hint: `${sp}${V} means ${sp} ${TIMES} ${V}.`,
+        steps: [
+          { m: `${S} = ${sp}${T}${h}`, n: `Swap ${V} for ${h}.`, k: 'eq' },
+          { m: `${S} = ${ans}`, k: 'eq' }] };
+    },
+  ];
+
+  function formula() {
+    const f = pick(FORMULAS)();
+    return Q(Object.assign({ kind: 'formula', prompt: 'Use the formula' }, f));
+  }
+
+  function pairSumDiff() {
+    const [p, q] = two(), big = R(5, 15), small = R(1, big - 1), s = big + small, d = big - small, askP = chance(0.6);
+    const A = askP ? p : q, ans = askP ? big : small;
+    return Q({ kind: 'pair-sd', unknown: A, prompt: 'Find ' + v(A), label: v(A) + ' =', answer: ans,
+      html: lines(`${v(p)}${P}${v(q)} = ${s}`, `${v(p)}${M}${v(q)} = ${d}`),
+      hint: `Find two numbers that add up to ${s}. Which pair is ${d} apart?`,
+      steps: [
+        { m: `${big}${P}${small} = ${s}`, n: `These two add up to ${s}.`, k: 'eq' },
+        { m: `${big}${M}${small} = ${d}`, n: `And they are ${d} apart.`, k: 'eq' },
+        { m: `${v(A)} = ${ans}`, n: askP ? `${v(p)} is the bigger number.` : `${v(q)} is the smaller number.`, k: 'eq' }] });
+  }
+
+  function pairProduct() {
+    let a = R(2, 9), b = R(2, 12);
+    while (b === a) b = R(2, 12);
+    const lo = Math.min(a, b), hi = Math.max(a, b), prod = lo * hi, sum = lo + hi, big = chance(0.6);
+    const pairs = [];
+    for (let i = 1; i * i <= prod; i++) if (prod % i === 0) pairs.push(i + T + prod / i);
+    const ans = big ? hi : lo;
+    return Q({ kind: 'pair-ps', prompt: big ? 'What is the bigger number?' : 'What is the smaller number?',
+      label: big ? 'Bigger =' : 'Smaller =', answer: ans,
+      ctx: `Two numbers multiply to make ${prod} and add up to ${sum}.`,
+      html: lines(`${v('a')}${T}${v('b')} = ${prod}`, `${v('a')}${P}${v('b')} = ${sum}`),
+      hint: `List the pairs that multiply to make ${prod}. Which pair adds up to ${sum}?`,
+      steps: [
+        { m: pairs.join(', '), n: `Pairs that multiply to make ${prod}.` },
+        { m: `${lo}${P}${hi} = ${sum}`, n: `This pair adds up to ${sum}.`, k: 'eq' },
+        { m: String(ans), n: `So the ${big ? 'bigger' : 'smaller'} number is ${ans}.`, k: 'val' }] });
+  }
+
+  function village() {
+    return choose([[3, subOne], [2, subTwo], [3, formula], [1, pairSumDiff], [1, pairProduct]])();
+  }
+
+  // ======================================================================
+  // Night 4: The Pub Gig. Sequences.
+  // ======================================================================
+  function arith(asc) {
+    if (asc) return { a: R(1, 30), d: R(2, 12) };
+    const d = -R(2, 9);
+    return { a: R(-d * 5 + 1, -d * 5 + 40), d };
+  }
+
+  function seqNext() {
+    const { a, d } = arith(chance(0.72));
+    const t = [0, 1, 2, 3].map((i) => a + i * d), ans = a + 4 * d, j = jumpText(d);
+    return Q({ kind: 'seq', prompt: 'What comes next?', label: BOX + ' =', answer: ans,
+      html: t.join(', ') + ', ' + BOX,
+      hint: 'What is the jump from one number to the next?',
+      steps: [
+        { m: j + ' each time', n: `${t[0]} to ${t[1]} is a jump of ${j}.` },
+        { m: `${t[3]}${d > 0 ? P : M}${Math.abs(d)} = ${ans}`, n: 'Do the same jump again.', k: 'eq' }] });
+  }
+
+  function seqGap() {
+    const { a, d } = arith(chance(0.7));
+    const t = [0, 1, 2, 3, 4].map((i) => a + i * d), k = R(1, 3), ans = t[k], j = jumpText(d);
+    const seen = k === 1 ? [2, 3] : [0, 1];
+    return Q({ kind: 'seq', prompt: 'Which number is missing?', label: BOX + ' =', answer: ans,
+      html: t.map((x, i) => (i === k ? BOX : x)).join(', '),
+      hint: 'Find the jump between two numbers you can see.',
+      steps: [
+        { m: j + ' each time', n: `${t[seen[0]]} to ${t[seen[1]]} is a jump of ${j}.` },
+        { m: `${t[k - 1]}${d > 0 ? P : M}${Math.abs(d)} = ${ans}`, n: 'Do one jump from the number before the gap.', k: 'eq' }] });
+  }
+
+  function seqTerm() {
+    const c = R(2, 9), b = R(-5, 10) || 3, N = pick([5, 6, 7, 8, 9, 10, 10, 12, 15, 20, 20, 50, 100]), ans = c * N + b, n = v('n');
+    return Q({ kind: 'seq-term', prompt: `What is the ${ord(N)} term?`, label: `Term ${N} =`, answer: ans, N,
+      html: `${n}th term = ${lin(c, n, b)}`,
+      hint: `Put ${n} = ${N} into the rule.`,
+      steps: [
+        { m: `${c}${T}${N}${sgn(b)}`, n: `Swap ${n} for ${N}.`, k: 'val' },
+        { m: `${c * N}${sgn(b)}`, n: 'Times first.', k: 'val' },
+        { m: String(ans), k: 'val' }] });
+  }
+
+  function seqRuleConst() {
+    const c = R(2, 9), b = R(1, 12), t = [1, 2, 3, 4].map((i) => c * i + b), n = v('n');
+    return Q({ kind: 'seq-rule', prompt: 'Finish the rule', label: BOX + ' =', answer: b,
+      html: lines(t.join(', ') + ', …', `${n}th term = ${c}${n}${P}${BOX}`),
+      hint: `The jump is ${c}, so the rule starts ${c}${n}. What do you add to ${c} to make ${t[0]}?`,
+      steps: [
+        { m: `${c}${T}1 = ${c}`, n: `The jump is +${c}, so the rule starts ${c}${n}. For the 1st term that gives ${c}.`, k: 'eq' },
+        { m: `${t[0]}${M}${c} = ${b}`, n: `The 1st term is ${t[0]}, so add ${b}.`, k: 'eq' },
+        { m: `${n}th term = ${c}${n}${P}${b}`, n: `Check: when ${n} = 2 it gives ${t[1]}.` }] });
+  }
+
+  function seqRuleCoef() {
+    const c = R(2, 9), b = R(1, 12), t = [1, 2, 3, 4].map((i) => c * i + b), n = v('n');
+    return Q({ kind: 'seq-rule', prompt: 'Finish the rule', label: BOX + ' =', answer: c,
+      html: lines(t.join(', ') + ', …', `${n}th term = ${BOX}${n}${P}${b}`),
+      hint: `The number in front of ${n} is the jump between the terms.`,
+      steps: [
+        { m: `${t[1]}${M}${t[0]} = ${c}`, n: `The jump is ${c} each time.`, k: 'eq' },
+        { m: `${n}th term = ${c}${n}${P}${b}`, n: `The number in front of ${n} is the jump. Check: ${c} ${TIMES} 1 + ${b} = ${t[0]}.` }] });
+  }
+
+  function seqStart() {
+    const a = R(1, 20), d = R(2, 9), N = R(4, 8);
+    const t = Array.from({ length: N }, (_, i) => a + i * d), ans = t[N - 1];
+    return Q({ kind: 'seq-start', prompt: `What is the ${ord(N)} number?`, label: `${ord(N)} =`, answer: ans, N,
+      ctx: `Start at ${a} and add ${d} each time.`,
+      html: `${a}, ${a + d}, …`,
+      hint: `Keep adding ${d} until you reach the ${ord(N)} number.`,
+      steps: [
+        { m: t.join(', '), n: `Keep adding ${d}.` },
+        { m: `${a}${P}${N - 1}${T}${d} = ${ans}`, n: `Quick way: the start plus ${N - 1} jumps of ${d}.`, k: 'eq' }] });
+  }
+
+  function pub() {
+    return choose([[3, seqNext], [2, seqGap], [2, seqTerm], [2, seqRuleConst], [1, seqRuleCoef], [1, seqStart]])();
+  }
+
+  // ======================================================================
+  // Night 5: Club Night. Two-step equations.
+  // ======================================================================
+  function club() {
+    const l = pick(LETTERS), X = v(l), L = X + ' =', prompt = 'Find ' + X;
+    return choose([
+      [4, () => {
+        const a = R(2, 9), s = R(1, 12), b = R(1, 20), c = a * s + b, flip = chance(0.25);
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: flip ? `${b}${P}${a}${X} = ${c}` : `${a}${X}${P}${b} = ${c}`,
+          hint: `First undo the + ${b}. Then undo the ${TIMES} ${a}.`,
+          steps: [
+            { m: `${a}${X} = ${c - b}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${a}.`, k: 'eq' }] });
+      }],
+      [3, () => {
+        const a = R(2, 9), s = R(1, 12), b = R(1, Math.min(20, a * s - 1)), c = a * s - b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}${X}${M}${b} = ${c}`,
+          hint: `First undo the ${MINUS} ${b}. Then undo the ${TIMES} ${a}.`,
+          steps: [
+            { m: `${a}${X} = ${c + b}`, n: `Add ${b} to both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${a}.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 6), q = R(2, 10), s = a * q, b = R(1, 12), c = q + b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${frac(X, a)}${P}${b} = ${c}`,
+          hint: `${frac(X, a)} means ${X} ${DIV} ${a}. Undo the + ${b} first.`,
+          steps: [
+            { m: `${frac(X, a)} = ${q}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Multiply both sides by ${a}.`, k: 'eq' }] });
+      }],
+      [1, () => {
+        const a = R(2, 6), q = R(3, 12), s = a * q, b = R(1, q - 1), c = q - b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${frac(X, a)}${M}${b} = ${c}`,
+          hint: `${frac(X, a)} means ${X} ${DIV} ${a}. Undo the ${MINUS} ${b} first.`,
+          steps: [
+            { m: `${frac(X, a)} = ${q}`, n: `Add ${b} to both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Multiply both sides by ${a}.`, k: 'eq' }] });
+      }],
+      [1, () => {
+        const a = R(2, 9), s = R(1, 12), b = R(1, 20), c = a * s + b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${c} = ${a}${X}${P}${b}`,
+          hint: `It works the same way round. Subtract ${b} from both sides.`,
+          steps: [
+            { m: `${c - b} = ${a}${X}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${a}.`, k: 'eq' }] });
+      }],
+    ])();
+  }
+
+  // ======================================================================
+  // Night 6: The Theatre. Simplify, expand, factorise.
+  // ======================================================================
+  function collectOne() {
+    const l = pick(LETTERS), X = v(l);
+    for (;;) {
+      const n = chance(0.35) ? 4 : 3, cs = [R(2, 9)];
+      for (let i = 1; i < n; i++) cs.push(R(1, 7) * (chance(0.3) ? -1 : 1));
+      let run = 0, ok = true;
+      for (const c of cs) { run += c; if (run < 1) ok = false; }
+      if (!ok || run < 2 || run > 20) continue;
+      const sum = run;
+      const expr = term(cs[0], X) + cs.slice(1).map((c) => sterm(c, X)).join('');
+      const nums = cs[0] + cs.slice(1).map((c) => (c < 0 ? M : P) + Math.abs(c)).join('');
+      const one = cs.some((c) => Math.abs(c) === 1) ? ` ${X} on its own counts as 1${X}.` : '';
+      return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: BOX + ' =', answer: sum,
+        html: `${expr} = ${BOX}${X}`,
+        hint: `They are all ${X} terms, so combine the numbers in front.${one}`,
+        steps: [
+          { m: `${nums} = ${sum}`, n: `Combine the numbers in front of each ${X}.${one}`, k: 'eq' },
+          { m: `${expr} = ${term(sum, X)}`, k: 'id' }] });
+    }
+  }
+
+  function collectTwo() {
+    const [p, q] = two(), Pv = v(p), Qv = v(q);
+    for (;;) {
+      const c1 = R(1, 8), c2 = R(1, 8) * (chance(0.25) ? -1 : 1);
+      const d1 = R(1, 8), d2 = R(1, 8) * (chance(0.25) ? -1 : 1);
+      const C = c1 + c2, Dd = d1 + d2;
+      if (C < 2 || Dd < 2) continue;
+      const expr = term(c1, Pv) + sterm(d1, Qv) + sterm(c2, Pv) + sterm(d2, Qv);
+      const askP = chance(0.5);
+      const rhs = askP ? `${BOX}${Pv}${sterm(Dd, Qv)}` : `${term(C, Pv)}${P}${BOX}${Qv}`;
+      return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: BOX + ' =', answer: askP ? C : Dd,
+        html: `${expr} = ${rhs}`,
+        hint: `Collect the ${askP ? Pv : Qv} terms together.`,
+        steps: [
+          { m: `${term(c1, Pv)}${sterm(c2, Pv)} = ${term(C, Pv)}`, n: `Collect the ${Pv} terms.`, k: 'id' },
+          { m: `${term(d1, Qv)}${sterm(d2, Qv)} = ${term(Dd, Qv)}`, n: `Collect the ${Qv} terms.`, k: 'id' },
+          { m: `${expr} = ${term(C, Pv)}${sterm(Dd, Qv)}`, k: 'id' }] });
+    }
+  }
+
+  function expand() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 9), b = R(1, 9), c = R(2, 5), f = R(0, 3);
+    const prompt = 'Expand the bracket', L = BOX + ' =', hint = `Multiply everything inside the bracket by ${a}.`;
+    if (f === 0 || f === 1) {
+      const s = f === 0 ? P : M;
+      return Q({ kind: 'id', unknown: '□', prompt, label: L, answer: a * b, hint,
+        html: `${a}(${X}${s}${b}) = ${a}${X}${s}${BOX}`,
+        steps: [
+          { m: `${a}${T}${X} = ${a}${X}`, n: `Multiply the first term by ${a}.`, k: 'id' },
+          { m: `${a}${T}${b} = ${a * b}`, n: 'Then the second term.', k: 'eq' },
+          { m: `${a}(${X}${s}${b}) = ${a}${X}${s}${a * b}`, k: 'id' }] });
+    }
+    if (f === 2) {
+      return Q({ kind: 'id', unknown: '□', prompt, label: L, answer: a * c, hint,
+        html: `${a}(${c}${X}${P}${b}) = ${BOX}${X}${P}${a * b}`,
+        steps: [
+          { m: `${a}${T}${c}${X} = ${a * c}${X}`, n: `Multiply the first term by ${a}.`, k: 'id' },
+          { m: `${a}${T}${b} = ${a * b}`, n: 'Then the second term.', k: 'eq' },
+          { m: `${a}(${c}${X}${P}${b}) = ${a * c}${X}${P}${a * b}`, k: 'id' }] });
+    }
+    return Q({ kind: 'id', unknown: '□', prompt, label: L, answer: a * b, hint,
+      html: `${a}(${c}${X}${M}${b}) = ${a * c}${X}${M}${BOX}`,
+      steps: [
+        { m: `${a}${T}${c}${X} = ${a * c}${X}`, n: `Multiply the first term by ${a}.`, k: 'id' },
+        { m: `${a}${T}${b} = ${a * b}`, n: 'Then the second term.', k: 'eq' },
+        { m: `${a}(${c}${X}${M}${b}) = ${a * c}${X}${M}${a * b}`, k: 'id' }] });
+  }
+
+  function factorise() {
+    const l = pick(LETTERS), X = v(l), L = BOX + ' =';
+    for (;;) {
+      const f = R(2, 6), c = R(1, 5), b = R(1, 9), form = R(0, 2);
+      if (gcd(c, b) !== 1) continue;
+      if (form === 0) {
+        return Q({ kind: 'id', unknown: '□', prompt: 'Factorise', label: L, answer: b,
+          html: `${f * c}${X}${P}${f * b} = ${f}(${term(c, X)}${P}${BOX})`,
+          hint: `What do you multiply ${f} by to get ${f * b}?`,
+          steps: [
+            { m: `${f}${T}${term(c, X)} = ${f * c}${X}`, n: 'The first part already works.', k: 'id' },
+            { m: `${f}${T}${b} = ${f * b}`, n: `${f} times what makes ${f * b}?`, k: 'eq' },
+            { m: `${f * c}${X}${P}${f * b} = ${f}(${term(c, X)}${P}${b})`, k: 'id' }] });
+      }
+      if (c < 2) continue;
+      const s = form === 2 ? M : P;
+      return Q({ kind: 'id', unknown: '□', prompt: 'Factorise', label: L, answer: f,
+        html: `${f * c}${X}${s}${f * b} = ${BOX}(${c}${X}${s}${b})`,
+        hint: `What times ${c}${X} makes ${f * c}${X}?`,
+        steps: [
+          { m: `${f * c}${D}${c} = ${f}`, n: `${f} ${TIMES} ${c}${X} makes ${f * c}${X}.`, k: 'eq' },
+          { m: `${f}${T}${b} = ${f * b}`, n: 'Check the second term works too.', k: 'eq' },
+          { m: `${f * c}${X}${s}${f * b} = ${f}(${c}${X}${s}${b})`, k: 'id' }] });
+    }
+  }
+
+  function multiplyTerms() {
+    const [p, q] = two(), Pv = v(p), Qv = v(q), a = R(2, 9), c = R(2, 9), f = R(0, 2), L = BOX + ' =';
+    if (f === 0) {
+      return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: L, answer: a * c,
+        html: `${a}${T}${c}${Pv} = ${BOX}${Pv}`,
+        hint: 'Multiply the numbers. The letter stays.',
+        steps: [
+          { m: `${a}${T}${c} = ${a * c}`, n: 'Multiply the numbers.', k: 'eq' },
+          { m: `${a}${T}${c}${Pv} = ${a * c}${Pv}`, k: 'id' }] });
+    }
+    if (f === 1) {
+      return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: L, answer: a * c,
+        html: `${a}${Pv}${T}${c}${Qv} = ${BOX}${Pv}${Qv}`,
+        hint: 'Multiply the numbers, then put the letters together.',
+        steps: [
+          { m: `${a}${T}${c} = ${a * c}`, n: 'Multiply the numbers, then put the letters together.', k: 'eq' },
+          { m: `${a}${Pv}${T}${c}${Qv} = ${a * c}${Pv}${Qv}`, k: 'id' }] });
+    }
+    return Q({ kind: 'id', unknown: '□', prompt: 'Simplify', label: L, answer: c,
+      html: `${a * c}${Pv}${D}${a} = ${BOX}${Pv}`,
+      hint: 'Divide the number part. The letter stays.',
+      steps: [
+        { m: `${a * c}${D}${a} = ${c}`, n: 'Divide the number part.', k: 'eq' },
+        { m: `${a * c}${Pv}${D}${a} = ${c}${Pv}`, k: 'id' }] });
+  }
+
+  function theatre() {
+    return choose([[3, collectOne], [2, collectTwo], [3, expand], [2, factorise], [1, multiplyTerms]])();
+  }
+
+  // ======================================================================
+  // Night 7: The Arena. Equations with brackets.
+  // ======================================================================
+  function arena() {
+    const l = pick(LETTERS), X = v(l), L = X + ' =', prompt = 'Find ' + X;
+    return choose([
+      [3, () => {
+        const a = R(2, 6), s = R(1, 12), b = R(1, 9), c = a * (s + b);
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}(${X}${P}${b}) = ${c}`,
+          hint: `Divide both sides by ${a} first. Or expand the bracket.`,
+          steps: [
+            { m: `${X}${P}${b} = ${s + b}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Subtract ${b} from both sides.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 6), b = R(1, 9), s = R(b + 1, b + 12), c = a * (s - b);
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}(${X}${M}${b}) = ${c}`,
+          hint: `Divide both sides by ${a} first. Or expand the bracket.`,
+          steps: [
+            { m: `${X}${M}${b} = ${s - b}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Add ${b} to both sides.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 5), c = R(2, 4), s = R(1, 10), b = R(1, 9), d = a * (c * s + b);
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}(${c}${X}${P}${b}) = ${d}`,
+          hint: `Divide both sides by ${a} first. Then it is a two-step equation.`,
+          steps: [
+            { m: `${c}${X}${P}${b} = ${c * s + b}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+            { m: `${c}${X} = ${c * s}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${c}.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const a = R(2, 6), q = R(2, 8), b = R(1, Math.min(9, a * q - 1)), s = a * q - b;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${frac(X + P + b, a)} = ${q}`,
+          hint: `The whole top is divided by ${a}. Multiply both sides by ${a} first.`,
+          steps: [
+            { m: `${X}${P}${b} = ${a * q}`, n: `Multiply both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Subtract ${b} from both sides.`, k: 'eq' }] });
+      }],
+      [1, () => {
+        const a = R(2, 5), b = R(1, 6), s = R(1, 10), e = R(1, 12), d = a * (s + b) + e;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${a}(${X}${P}${b})${P}${e} = ${d}`,
+          hint: `Get the bracket on its own first. Subtract ${e} from both sides.`,
+          steps: [
+            { m: `${a}(${X}${P}${b}) = ${d - e}`, n: `Subtract ${e} from both sides.`, k: 'eq' },
+            { m: `${X}${P}${b} = ${s + b}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Subtract ${b} from both sides.`, k: 'eq' }] });
+      }],
+      [2, () => {
+        const p = R(2, 4), q = R(2, 4), a = R(1, 6), b = R(1, 6), s = R(1, 10), k = p + q, e = p * a + q * b, c = k * s + e;
+        return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+          html: `${p}(${X}${P}${a})${P}${q}(${X}${P}${b}) = ${c}`,
+          hint: 'Expand both brackets, then collect like terms.',
+          steps: [
+            { m: `${p}${X}${P}${p * a}${P}${q}${X}${P}${q * b} = ${c}`, n: 'Expand both brackets.', k: 'eq' },
+            { m: `${k}${X}${P}${e} = ${c}`, n: 'Collect like terms.', k: 'eq' },
+            { m: `${k}${X} = ${c - e}`, n: `Subtract ${e} from both sides.`, k: 'eq' },
+            { m: `${X} = ${s}`, n: `Divide both sides by ${k}.`, k: 'eq' }] });
+      }],
+    ])();
+  }
+
+  // ======================================================================
+  // Night 8: Festival Main Stage. Letters on both sides.
+  // ======================================================================
+  function bothPlus(l, X) {
+    const c = R(1, 6), k = R(1, 5), a = c + k, s = R(1, 12), b = R(1, 15), d = k * s + b;
+    const steps = [
+      { m: `${term(k, X)}${P}${b} = ${d}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+      { m: `${term(k, X)} = ${d - b}`, n: `Subtract ${b} from both sides.`, k: 'eq' }];
+    if (k > 1) steps.push({ m: `${X} = ${s}`, n: `Divide both sides by ${k}.`, k: 'eq' });
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}${X}${P}${b} = ${term(c, X)}${P}${d}`,
+      hint: `Get the ${X} terms on one side. Subtract ${term(c, X)} from both sides.`, steps });
+  }
+  function bothMinus(l, X) {
+    const c = R(1, 6), k = R(1, 5), a = c + k, s = R(2, 12), b = R(1, Math.min(15, k * s - 1)), d = k * s - b;
+    const steps = [
+      { m: `${term(k, X)}${M}${b} = ${d}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+      { m: `${term(k, X)} = ${d + b}`, n: `Add ${b} to both sides.`, k: 'eq' }];
+    if (k > 1) steps.push({ m: `${X} = ${s}`, n: `Divide both sides by ${k}.`, k: 'eq' });
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}${X}${M}${b} = ${term(c, X)}${P}${d}`,
+      hint: `Get the ${X} terms on one side. Subtract ${term(c, X)} from both sides.`, steps });
+  }
+  function rightBigger(l, X) {
+    const c = R(1, 5), k = R(1, 4), a = c + k, s = R(1, 12), b = R(1, 12), d = k * s + b;
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${term(c, X)}${P}${d} = ${a}${X}${P}${b}`,
+      hint: `There are more ${X}s on the right. Subtract ${term(c, X)} from both sides.`,
+      steps: [
+        { m: `${d} = ${term(k, X)}${P}${b}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+        { m: `${d - b} = ${term(k, X)}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+        { m: `${X} = ${s}`, n: k > 1 ? `Divide both sides by ${k}.` : 'Swap the sides round.', k: 'eq' }] });
+  }
+  function bracketBoth(l, X) {
+    const c = R(1, 4), k = R(1, 3), a = c + k, b = R(1, 6), s = R(1, 10), d = k * s + a * b;
+    const steps = [
+      { m: `${a}${X}${P}${a * b} = ${term(c, X)}${P}${d}`, n: 'Expand the bracket.', k: 'eq' },
+      { m: `${term(k, X)}${P}${a * b} = ${d}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+      { m: `${term(k, X)} = ${d - a * b}`, n: `Subtract ${a * b} from both sides.`, k: 'eq' }];
+    if (k > 1) steps.push({ m: `${X} = ${s}`, n: `Divide both sides by ${k}.`, k: 'eq' });
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}(${X}${P}${b}) = ${term(c, X)}${P}${d}`,
+      hint: 'Expand the bracket first. Then get the letters on one side.', steps });
+  }
+  function festival() {
+    const l = pick(LETTERS), X = v(l);
+    return choose([
+      [3, () => bothPlus(l, X)], [2, () => bothMinus(l, X)],
+      [2, () => rightBigger(l, X)], [2, () => bracketBoth(l, X)]])();
+  }
+
+  // ======================================================================
+  // Night 9: The Stadium. Negatives, powers, inequalities, everything.
+  // ======================================================================
+  function negOneStep() {
+    const l = pick(LETTERS), X = v(l), L = X + ' =', prompt = 'Find ' + X, f = R(0, 2);
+    if (f === 0) {
+      const s = -R(1, 12), a = R(2, 15), c = s + a;
+      return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+        html: `${X}${P}${a} = ${num(c)}`,
+        hint: `Subtract ${a} from both sides. The answer can be below zero.`,
+        steps: [
+          { m: `${X} = ${num(c)}${M}${a}`, n: `Subtract ${a} from both sides.`, k: 'eq' },
+          { m: `${X} = ${num(s)}`, n: c >= 0 ? `Counting back ${a} from ${c} takes you below zero.` : 'Count back further below zero.', k: 'eq' }] });
+    }
+    if (f === 1) {
+      const c = -R(1, 12), a = R(2, 12), s = c + a;
+      return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+        html: `${X}${M}${a} = ${num(c)}`,
+        hint: `Add ${a} to both sides.`,
+        steps: [
+          { m: `${X} = ${num(c)}${P}${a}`, n: `Add ${a} to both sides.`, k: 'eq' },
+          { m: `${X} = ${num(s)}`, n: `Count up ${a} from ${num(c)}.`, k: 'eq' }] });
+    }
+    const a = R(2, 9), s = -R(2, 10), c = a * s;
+    return Q({ kind: 'eq', unknown: l, prompt, label: L, answer: s,
+      html: `${a}${X} = ${num(c)}`,
+      hint: `Divide both sides by ${a}. A negative divided by a positive is negative.`,
+      steps: [
+        { m: `${X} = ${num(c)}${D}${a}`, n: `Divide both sides by ${a}.`, k: 'eq' },
+        { m: `${X} = ${num(s)}`, n: 'A negative divided by a positive is negative.', k: 'eq' }] });
+  }
+
+  function negTwoStep() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 6), s = -R(1, 9), b = R(1, 30), c = a * s + b;
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}${X}${P}${b} = ${num(c)}`,
+      hint: `Subtract ${b} from both sides, then divide by ${a}. Watch out for a negative.`,
+      steps: [
+        { m: `${a}${X} = ${num(c - b)}`, n: `Subtract ${b} from both sides.`, k: 'eq' },
+        { m: `${X} = ${num(s)}`, n: `Divide both sides by ${a}.`, k: 'eq' }] });
+  }
+
+  function negSub() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 6), val = -R(1, 8), b = R(1, 20), ans = a * val + b;
+    return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${num(val)}`, label: '=', answer: ans,
+      html: `${a}${X}${P}${b}`,
+      hint: `${a}${X} means ${a} ${TIMES} ${X}. A positive times a negative is negative.`,
+      steps: [
+        { m: `${a}${T}(${num(val)})${P}${b}`, n: `Swap ${X} for ${num(val)}.`, k: 'val' },
+        { m: `${num(a * val)}${P}${b}`, n: `${a} ${TIMES} ${num(val)} = ${num(a * val)}`, k: 'val' },
+        { m: num(ans), k: 'val' }] });
+  }
+
+  function powers() {
+    const l = pick(LETTERS), X = v(l), f = R(0, 2);
+    if (f === 0) {
+      const val = R(2, 9);
+      let b = R(1, 20) * (chance(0.3) ? -1 : 1);
+      if (val * val + b <= 0) b = Math.abs(b);
+      const ans = val * val + b;
+      return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${val}`, label: '=', answer: ans,
+        html: sq(X) + sgn(b),
+        hint: `${sq(X)} means ${X} ${TIMES} ${X}, not 2 ${TIMES} ${X}.`,
+        steps: [
+          { m: `${val}${T}${val}${sgn(b)}`, n: `${sq(X)} means ${X} ${TIMES} ${X}.`, k: 'val' },
+          { m: `${val * val}${sgn(b)}`, k: 'val' },
+          { m: String(ans), k: 'val' }] });
+    }
+    if (f === 1) {
+      const val = R(2, 6), c = R(2, 5), ans = c * val * val;
+      return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${val}`, label: '=', answer: ans,
+        html: c + sq(X),
+        hint: `Square ${X} first, then times by ${c}.`,
+        steps: [
+          { m: `${c}${T}${val}${T}${val}`, n: `Square ${X} first, then times by ${c}.`, k: 'val' },
+          { m: `${c}${T}${val * val}`, k: 'val' },
+          { m: String(ans), k: 'val' }] });
+    }
+    const val = -R(2, 9), b = R(1, 15), ans = val * val + b;
+    return Q({ kind: 'eval', prompt: 'Work it out', given: `If ${X} = ${num(val)}`, label: '=', answer: ans,
+      html: sq(X) + P + b,
+      hint: 'A negative times a negative is positive.',
+      steps: [
+        { m: `(${num(val)})${T}(${num(val)})${P}${b}`, n: `${sq(X)} means ${X} ${TIMES} ${X}.`, k: 'val' },
+        { m: `${val * val}${P}${b}`, n: 'A negative times a negative is positive.', k: 'val' },
+        { m: String(ans), k: 'val' }] });
+  }
+
+  function inequality() {
+    const l = pick(LETTERS), X = v(l), a = R(2, 5), k = R(2, 9), r = R(0, a - 1);
+    if (chance(0.5)) {
+      const b = R(1, 12), c = a * k + r + b, ans = r === 0 ? k - 1 : k;
+      return Q({ kind: 'ineq-max', unknown: l, prompt: `Biggest whole number ${X} that makes this true`, label: X + ' =', answer: ans,
+        html: `${a}${X}${P}${b} < ${c}`,
+        hint: 'Solve it like an equation, then pick the biggest whole number that still fits.',
+        steps: [
+          { m: `${a}${X} < ${c - b}`, n: `Subtract ${b} from both sides.` },
+          r === 0
+            ? { m: `${X} < ${k}`, n: `Divide both sides by ${a}.` }
+            : { m: `${c - b}${D}${a} = ${k} r ${r}`, n: `${a} ${TIMES} ${k} = ${a * k} fits. ${a} ${TIMES} ${k + 1} = ${a * (k + 1)} is too big.` },
+          { m: `${X} = ${ans}`, n: r === 0 ? `${X} must be less than ${k}, so the biggest whole number is ${k - 1}.` : `So the biggest whole number is ${k}.`, k: 'eq' }] });
+    }
+    const b = R(1, Math.min(12, a * k + r - 1)), c = a * k + r - b, ans = k + 1;
+    return Q({ kind: 'ineq-min', unknown: l, prompt: `Smallest whole number ${X} that makes this true`, label: X + ' =', answer: ans,
+      html: `${a}${X}${M}${b} > ${c}`,
+      hint: 'Solve it like an equation, then pick the smallest whole number that is bigger.',
+      steps: [
+        { m: `${a}${X} > ${c + b}`, n: `Add ${b} to both sides.` },
+        r === 0
+          ? { m: `${X} > ${k}`, n: `Divide both sides by ${a}.` }
+          : { m: `${c + b}${D}${a} = ${k} r ${r}`, n: `${a} ${TIMES} ${k} = ${a * k} is too small.` },
+        { m: `${X} = ${ans}`, n: `The smallest whole number that works is ${ans}.`, k: 'eq' }] });
+  }
+
+  function bothNeg() {
+    const l = pick(LETTERS), X = v(l), c = R(1, 5), k = R(1, 4), a = c + k, s = -R(1, 8), b = R(1, 20), d = k * s + b;
+    const steps = [
+      { m: `${term(k, X)}${P}${b} = ${num(d)}`, n: `Subtract ${term(c, X)} from both sides.`, k: 'eq' },
+      { m: `${term(k, X)} = ${num(d - b)}`, n: `Subtract ${b} from both sides.`, k: 'eq' }];
+    if (k > 1) steps.push({ m: `${X} = ${num(s)}`, n: `Divide both sides by ${k}.`, k: 'eq' });
+    return Q({ kind: 'eq', unknown: l, prompt: 'Find ' + X, label: X + ' =', answer: s,
+      html: `${a}${X}${P}${b} = ${term(c, X)}${d === 0 ? '' : sgn(d)}`,
+      hint: `Get the ${X} terms on one side first. The answer is below zero.`, steps });
+  }
+
+  function stadium() {
+    return choose([
+      [2, negOneStep], [2, negTwoStep], [1.5, negSub], [1.5, powers], [1.5, inequality], [1.5, bothNeg],
+      [1, arena], [1, festival], [1, theatre], [0.5, pairProduct]])();
+  }
+
+  // ======================================================================
+  // The tour
+  // ======================================================================
+  const VENUES = [
+    { id: 'bedroom', name: 'The Bedroom', skill: 'Missing numbers', years: 'Year 3-5', unlockYear: 5,
+      secs: 60, picks: [6, 11, 16], gen: bedroom,
+      blurb: 'Warm up your fingers. Find the number hiding in the box.',
+      example: `${BOX}${P}7 = 15` },
+    { id: 'garage', name: 'The Garage', skill: 'Letters for numbers', years: 'Year 6', unlockYear: 6,
+      secs: 60, picks: [5, 10, 14], gen: garage,
+      blurb: 'The same puzzles with a new look. A letter stands for the missing number.',
+      example: `${v('n')}${P}8 = 15` },
+    { id: 'hall', name: 'Village Hall', skill: 'Formulae and two-number puzzles', years: 'Year 6', unlockYear: 6,
+      secs: 90, picks: [4, 8, 12], gen: village,
+      blurb: 'Swap letters for numbers, use band formulae and crack two-number puzzles.',
+      example: `3${v('a')}${P}2 when ${v('a')} = 4` },
+    { id: 'pub', name: 'The Pub Gig', skill: 'Sequences and nth term rules', years: 'Year 6-8', unlockYear: 7,
+      secs: 90, picks: [4, 8, 12], gen: pub,
+      blurb: 'Spot the jump, find the missing numbers and use nth term rules.',
+      example: `5, 9, 13, 17, ${BOX}` },
+    { id: 'club', name: 'Club Night', skill: 'Two-step equations', years: 'Year 6-8', unlockYear: 7,
+      secs: 90, picks: [4, 8, 12], gen: club,
+      blurb: 'Undo two things to get the letter on its own.',
+      example: `3${v('x')}${P}5 = 20` },
+    { id: 'theatre', name: 'The Theatre', skill: 'Simplify, expand and factorise', years: 'Year 7', unlockYear: 7,
+      secs: 90, picks: [5, 9, 13], gen: theatre,
+      blurb: 'Collect like terms, multiply out brackets and put them back in.',
+      example: `3(${v('x')}${P}4) = 3${v('x')}${P}${BOX}` },
+    { id: 'arena', name: 'The Arena', skill: 'Equations with brackets', years: 'Year 8', unlockYear: 8,
+      secs: 120, picks: [4, 7, 10], gen: arena,
+      blurb: 'Brackets, fractions and longer equations.',
+      example: `3(${v('x')}${P}2) = 21` },
+    { id: 'festival', name: 'Festival Main Stage', skill: 'Letters on both sides', years: 'Year 8-9', unlockYear: 8,
+      secs: 120, picks: [3, 6, 9], gen: festival,
+      blurb: 'Get all the letters on one side, then solve.',
+      example: `5${v('x')}${P}3 = 2${v('x')}${P}15` },
+    { id: 'stadium', name: 'The Stadium', skill: 'Negatives, powers and the lot', years: 'Year 9', unlockYear: 9,
+      secs: 120, picks: [4, 8, 12], gen: stadium, negatives: true,
+      blurb: 'The big one. Some answers are below zero, so you will need the minus key.',
+      example: `2${v('x')}${P}11 = 3` },
+  ];
+
+  function generate(index, recent) {
+    const vn = VENUES[index];
+    let q = vn.gen();
+    for (let i = 0; i < 12 && recent && recent.indexOf(q.key) !== -1; i++) q = vn.gen();
+    return q;
+  }
+
+  const API = { VENUES, generate, seed, unseed, num, v, BOX, MINUS, TIMES };
+  if (typeof module !== 'undefined' && module.exports) module.exports = API;
+  else root.RTUQ = API;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+<script>
+(function () {
+  'use strict';
+  const QB = window.RTUQ;
+  const VENUES = QB.VENUES;
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+  const reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const fmt = (n) => Number(n).toLocaleString('en-GB');
+  const pickR = (a) => a[Math.floor(Math.random() * a.length)];
+  const num = QB.num;
+
+  // ---------------------------------------------------------------- content
+  const ADJ = ['Electric', 'Velvet', 'Neon', 'Thunder', 'Sonic', 'Cosmic', 'Midnight', 'Atomic', 'Rocket', 'Crimson', 'Galactic', 'Turbo'];
+  const NOUN = ['Brackets', 'Variables', 'Unknowns', 'Equations', 'Integers', 'Factors', 'Sequences', 'Coefficients', 'Remainders', 'Formulae', 'Inverses', 'Exponents'];
+  const randomBand = () => 'The ' + pickR(ADJ) + ' ' + pickR(NOUN);
+  const CHEERS = ['Rock on!', 'Nailed it!', 'Smashed it!', 'Wicked!', 'Top riff!', 'Shredding!', 'Legend!', 'Encore!', 'Crowd goes wild!'];
+  const STATUS = [[0, 'Bedroom strummer'], [250, 'Open mic regular'], [1000, 'Pub circuit act'], [2500, 'Local legend'], [5000, 'Radio play'], [10000, 'Chart climber'], [20000, 'Festival favourite'], [40000, 'Stadium filler'], [75000, 'Hall of famer']];
+  const YEARS = [[5, 'Y5 or below'], [6, 'Y6'], [7, 'Y7'], [8, 'Y8'], [9, 'Y9+']];
+
+  const PICK_PATH = 'M10 21.2C6.2 17.6 1.4 12 1.4 6.6 1.4 3.1 5 1 10 1s8.6 2.1 8.6 5.6c0 5.4-4.8 11-8.6 14.6Z';
+  const pickSVG = (on, i) => `<svg class="pk${on ? ' on' : ''}" viewBox="0 0 20 22" aria-hidden="true" style="animation-delay:${(i || 0) * 220 + 450}ms"><path d="${PICK_PATH}"/></svg>`;
+  const picksRow = (n) => `<span class="picks" role="img" aria-label="${n} of 3 picks">${[0, 1, 2].map((i) => pickSVG(i < n, i)).join('')}</span>`;
+  const ICON = {
+    lock: '<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+    soundOn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.6 6.4a7.6 7.6 0 0 1 0 11.2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    soundOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="m16.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  };
+  const INSTRUMENTS = {
+    guitar: { name: 'Lead guitar', short: 'Guitar', svg: '<svg viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(40 16 16)" fill="currentColor"><rect x="14" y="0.5" width="4" height="5.5" rx="1.2"/><rect x="15" y="5" width="2" height="13.5"/><circle cx="16" cy="20.5" r="4.6"/><circle cx="16" cy="25.6" r="5.6"/><rect x="13.2" y="23" width="5.6" height="1.6" rx="0.6" style="fill: var(--icon-cut)"/></g></svg>' },
+    drums: { name: 'Drums', svg: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 15v7.5c0 2.3 4.9 4.2 11 4.2s11-1.9 11-4.2V15c0 2.3-4.9 4.2-11 4.2S5 17.3 5 15Z" fill="currentColor"/><ellipse cx="16" cy="15" rx="11" ry="4.2" fill="currentColor"/><ellipse cx="16" cy="15" rx="9" ry="2.9" style="fill: var(--icon-cut)"/><path d="M7 3.5 18.5 13M25 3.5 13.5 13" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>' },
+    keys: { name: 'Keys', svg: '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.5" y="8" width="29" height="17" rx="2.5" fill="currentColor"/><g style="fill: var(--icon-cut)"><rect x="3.6" y="13" width="3.7" height="10" rx="0.8"/><rect x="7.9" y="13" width="3.7" height="10" rx="0.8"/><rect x="12.2" y="13" width="3.7" height="10" rx="0.8"/><rect x="16.5" y="13" width="3.7" height="10" rx="0.8"/><rect x="20.8" y="13" width="3.7" height="10" rx="0.8"/><rect x="25.1" y="13" width="3.4" height="10" rx="0.8"/><circle cx="5.5" cy="10.5" r="1.1"/><circle cx="9.5" cy="10.5" r="1.1"/></g><g fill="currentColor"><rect x="6.4" y="13" width="2.4" height="6" rx="0.6"/><rect x="10.7" y="13" width="2.4" height="6" rx="0.6"/><rect x="19.3" y="13" width="2.4" height="6" rx="0.6"/><rect x="23.6" y="13" width="2.4" height="6" rx="0.6"/></g></svg>' },
+    vocals: { name: 'Vocals', svg: '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="11.5" y="2" width="9" height="14.5" rx="4.5" fill="currentColor"/><g style="fill: var(--icon-cut)"><rect x="11.5" y="6.6" width="9" height="1.3"/><rect x="11.5" y="9.6" width="9" height="1.3"/></g><path d="M7.5 13.5a8.5 8.5 0 0 0 17 0M16 22v5.5M11 28.5h10" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>' },
+  };
+
+  // ---------------------------------------------------------------- saved progress
+  const KEY = 'rock-the-unknown/v1';
+  const blank = () => ({ band: '', instrument: 'guitar', year: 6, fans: 0, venues: {}, sfx: true, beat: true, started: false });
+  let save = blank();
+  let hadStored = false;
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) { save = Object.assign(blank(), JSON.parse(raw)); hadStored = true; }
+    } catch (e) { /* storage blocked: play on without saving */ }
+  }
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(save)); } catch (e) { /* ignore */ } }
+
+  const vstat = (id) => save.venues[id] || { best: 0, picks: 0, plays: 0 };
+  function isUnlocked(i) {
+    if (i === 0 || VENUES[i].unlockYear <= save.year) return true;
+    return vstat(VENUES[i - 1].id).picks >= 1;
+  }
+  function statusFor(fans) {
+    let idx = 0;
+    STATUS.forEach((s, i) => { if (fans >= s[0]) idx = i; });
+    const cur = STATUS[idx], nxt = STATUS[idx + 1];
+    return { name: cur[1], next: nxt ? { at: nxt[0], name: nxt[1] } : null, progress: nxt ? (fans - cur[0]) / (nxt[0] - cur[0]) : 1 };
+  }
+  const multFor = (s) => (s >= 11 ? 4 : s >= 8 ? 3 : s >= 4 ? 2 : 1);
+  const secsText = (s) => (s < 120 ? s + '-second' : s / 60 + '-minute');
+
+  // ---------------------------------------------------------------- sound (synthesised, no files)
+  const Sound = (function () {
+    let ctx = null, out = null, sfx = null, beat = null, noiseBuf = null, curve = null;
+    let beatTimer = 0, nextTime = 0, step = 0, bpm = 110;
+    function ensure() {
+      if (!ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        try { ctx = new AC(); } catch (e) { return null; }
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = -14; comp.knee.value = 10; comp.ratio.value = 4;
+        out = ctx.createGain(); out.gain.value = 0.85; out.connect(comp); comp.connect(ctx.destination);
+        sfx = ctx.createGain(); sfx.gain.value = 0.9; sfx.connect(out);
+        beat = ctx.createGain(); beat.gain.value = 0.26; beat.connect(out);
+        noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      }
+      if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) { /* ignore */ } }
+      return ctx;
+    }
+    const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+    function env(g, t, a, peak, dur) {
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t + a);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    }
+    function noise(t, dur, type, freq, q, peak, bus, attack) {
+      const src = ctx.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+      const f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; if (q) f.Q.value = q;
+      const g = ctx.createGain(); env(g, t, attack || 0.002, peak, dur);
+      src.connect(f); f.connect(g); g.connect(bus);
+      src.start(t, Math.random() * 0.5); src.stop(t + dur + 0.05);
+    }
+    function osc(type, freq, t, dur, peak, bus, attack) {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type; o.frequency.setValueAtTime(freq, t);
+      env(g, t, attack || 0.004, peak, dur);
+      o.connect(g); g.connect(bus); o.start(t); o.stop(t + dur + 0.05);
+      return o;
+    }
+    function kick(t, bus) { const o = osc('sine', 150, t, 0.3, 0.9, bus, 0.002); o.frequency.exponentialRampToValueAtTime(45, t + 0.12); }
+    function snare(t, bus) { noise(t, 0.16, 'highpass', 1300, 0, 0.45, bus); osc('triangle', 190, t, 0.09, 0.3, bus, 0.002); }
+    function hat(t, bus, peak) { noise(t, 0.04, 'highpass', 7600, 0, peak, bus); }
+    function crash(t, peak) { noise(t, 1.3, 'highpass', 4800, 0, peak, sfx); }
+    function tom(t, f0) { const o = osc('sine', f0, t, 0.22, 0.6, sfx, 0.002); o.frequency.exponentialRampToValueAtTime(f0 * 0.6, t + 0.2); }
+    function dist() {
+      if (curve) return curve;
+      const n = 2048, k = 28; curve = new Float32Array(n);
+      for (let i = 0; i < n; i++) { const x = (i * 2) / n - 1; curve[i] = ((1 + k) * x) / (1 + k * Math.abs(x)); }
+      return curve;
+    }
+    function guitar(t, root, dur, peak) {
+      const pre = ctx.createGain(); pre.gain.value = 0.45;
+      const sh = ctx.createWaveShaper(); sh.curve = dist(); sh.oversample = '2x';
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3000;
+      const g = ctx.createGain(); env(g, t, 0.006, peak, dur);
+      [0, 7, 12].forEach((s) => {
+        const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(root + s); o.detune.value = Math.random() * 12 - 6;
+        o.connect(pre); o.start(t); o.stop(t + dur + 0.05);
+      });
+      pre.connect(sh); sh.connect(lp); lp.connect(g); g.connect(sfx);
+    }
+    function keys(t, root, dur) { [0, 4, 7, 12].forEach((s, i) => osc(i % 2 ? 'square' : 'triangle', mtof(root + s), t, dur, i % 2 ? 0.035 : 0.12, sfx)); }
+    function voice(t, root, dur) {
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(root);
+      const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 5.5; lg.gain.value = 18; lfo.connect(lg); lg.connect(o.detune);
+      const f1 = ctx.createBiquadFilter(); f1.type = 'bandpass'; f1.frequency.value = 750; f1.Q.value = 5;
+      const f2 = ctx.createBiquadFilter(); f2.type = 'bandpass'; f2.frequency.value = 1200; f2.Q.value = 7;
+      const g = ctx.createGain(); env(g, t, 0.06, 0.9, dur);
+      o.connect(f1); o.connect(f2); f1.connect(g); f2.connect(g); g.connect(sfx);
+      o.start(t); lfo.start(t); o.stop(t + dur + 0.05); lfo.stop(t + dur + 0.05);
+    }
+    function play(inst, t, root, dur) {
+      if (inst === 'drums') { tom(t, 260); tom(t + 0.07, 200); tom(t + 0.14, 150); kick(t + 0.21, sfx); crash(t + 0.21, 0.2); }
+      else if (inst === 'keys') keys(t, root + 24, dur + 0.1);
+      else if (inst === 'vocals') { voice(t, root + 24, dur); voice(t, root + 31, dur); }
+      else guitar(t, root, dur, 0.28);
+    }
+    function schedule() {
+      if (!ctx) return;
+      while (nextTime < ctx.currentTime + 0.12) {
+        const s = step % 8;
+        if (s === 0 || s === 4 || s === 5) kick(nextTime, beat);
+        if (s === 2 || s === 6) snare(nextTime, beat);
+        hat(nextTime, beat, s % 2 ? 0.09 : 0.15);
+        nextTime += 60 / bpm / 2;
+        step++;
+      }
+    }
+    const SCALE = [0, 3, 5, 7, 10, 12, 15, 17];
+    const okSfx = () => save.sfx && ensure();
+    return {
+      unlock() { ensure(); },
+      correct(inst, level) { if (!okSfx()) return; play(inst, ctx.currentTime + 0.01, 40 + SCALE[Math.max(0, Math.min(7, level))], 0.42); },
+      wrong() {
+        if (!okSfx()) return;
+        const t = ctx.currentTime + 0.01;
+        [0, 1].forEach((s) => {
+          const o = ctx.createOscillator(), g = ctx.createGain(), lp = ctx.createBiquadFilter();
+          o.type = 'sawtooth'; o.frequency.setValueAtTime(mtof(47 + s), t); o.frequency.exponentialRampToValueAtTime(mtof(40 + s), t + 0.45);
+          lp.type = 'lowpass'; lp.frequency.value = 900; env(g, t, 0.01, 0.13, 0.5);
+          o.connect(lp); lp.connect(g); g.connect(sfx); o.start(t); o.stop(t + 0.55);
+        });
+      },
+      cheer(size) {
+        if (!okSfx()) return;
+        const t = ctx.currentTime + 0.02, s = Math.max(0.2, Math.min(1, size));
+        noise(t, 1.7, 'bandpass', 1700, 0.8, 0.2 * s, sfx, 0.28);
+        noise(t + 0.05, 1.5, 'bandpass', 850, 0.9, 0.16 * s, sfx, 0.3);
+      },
+      stick() { if (!okSfx()) return; const t = ctx.currentTime + 0.005; noise(t, 0.035, 'bandpass', 2600, 3, 0.7, sfx); },
+      rock(inst) { if (!okSfx()) return; const t = ctx.currentTime + 0.01; kick(t, sfx); crash(t, 0.26); if (inst !== 'drums') play(inst, t, 40, 0.6); },
+      chord(inst, level) { if (!okSfx()) return; play(inst, ctx.currentTime + 0.01, 40 + SCALE[Math.max(0, Math.min(7, level))], 0.35); },
+      finale(inst, n) {
+        if (!okSfx()) return;
+        const t = ctx.currentTime + 0.01;
+        kick(t, sfx); crash(t, 0.32);
+        if (inst === 'drums') { tom(t, 260); tom(t + 0.09, 210); tom(t + 0.18, 170); tom(t + 0.27, 130); kick(t + 0.36, sfx); crash(t + 0.36, 0.3); }
+        else play(inst, t, 40, 1.3);
+        this.cheer(Math.min(1, 0.45 + n / 14));
+      },
+      suspend() { if (ctx && ctx.state === 'running') { try { ctx.suspend(); } catch (e) { /* ignore */ } } },
+      startBeat() {
+        if (!save.beat || !ensure()) return;
+        this.stopBeat(); nextTime = ctx.currentTime + 0.06; step = 0; beatTimer = setInterval(schedule, 25);
+      },
+      stopBeat() { if (beatTimer) clearInterval(beatTimer); beatTimer = 0; },
+      setTempo(level) { bpm = 108 + level * 2.5; },
+      bpm() { return bpm; },
+    };
+  })();
+
+  // ---------------------------------------------------------------- crowd (canvas)
+  const Crowd = (function () {
+    let canvas = null, g = null, w = 0, h = 0, dpr = 1, raf = 0, people = [], target = 0, hype = 0, colors = null;
+    function seed() {
+      people = [];
+      for (let i = 0; i < 66; i++) {
+        people.push({ x: (i * 0.618 + Math.random() * 0.3) % 1, s: 0.72 + Math.random() * 0.5, ph: Math.random() * 6.28,
+          arms: Math.random(), light: Math.random() < 0.28, row: i % 3 === 0 ? 1 : 0, shown: 0, sway: Math.random() * 2 - 1 });
+      }
+      people.sort((a, b) => b.row - a.row);
+    }
+    function readColors() {
+      const cs = getComputedStyle(document.documentElement);
+      colors = { back: cs.getPropertyValue('--crowd-back').trim(), front: cs.getPropertyValue('--crowd-front').trim(),
+        light: cs.getPropertyValue('--tungsten').trim(), gel: cs.getPropertyValue('--gel').trim() };
+    }
+    function resize() {
+      if (!canvas) return;
+      const r = canvas.getBoundingClientRect();
+      dpr = Math.min(2, window.devicePixelRatio || 1); w = r.width; h = r.height;
+      canvas.width = Math.max(1, Math.round(w * dpr)); canvas.height = Math.max(1, Math.round(h * dpr));
+    }
+    function frame(ts) {
+      raf = requestAnimationFrame(frame);
+      if (!w || !h) { resize(); if (!w) return; }
+      g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+      const beatPhase = (ts / 1000) * (Sound.bpm() / 60) * Math.PI * 2;
+      const sc = Math.min(1.25, h / 70);
+      let rank = 0;
+      for (let i = 0; i < people.length; i++) {
+        const p = people[i];
+        const want = rank < target ? 1 : 0; rank++;
+        p.shown += (want - p.shown) * 0.09;
+        if (p.shown < 0.02) continue;
+        const s = p.s * sc;
+        const bob = reduceMotion ? 0 : Math.max(0, Math.sin(beatPhase + p.ph * 0.25)) * (1.5 + 4 * hype) * s;
+        const bodyH = 30 * s, headR = 7 * s, x = p.x * w + (reduceMotion ? 0 : Math.sin(ts / 900 + p.ph) * 1.5 * p.sway);
+        const top = h + 4 - p.row * 9 * sc - (bodyH + headR) * p.shown - bob;
+        g.fillStyle = p.row ? colors.back : colors.front;
+        g.strokeStyle = g.fillStyle;
+        g.beginPath(); g.arc(x, top + headR, headR, 0, Math.PI * 2); g.fill();
+        const bw = 22 * s;
+        g.beginPath();
+        if (g.roundRect) g.roundRect(x - bw / 2, top + headR * 2 - 1, bw, bodyH + 12, 8 * s); else g.rect(x - bw / 2, top + headR * 2 - 1, bw, bodyH + 12);
+        g.fill();
+        if (p.arms < hype * 0.9) {
+          g.lineWidth = 4.2 * s; g.lineCap = 'round';
+          const lift = 18 * s + (reduceMotion ? 0 : Math.sin(beatPhase + p.ph) * 3 * s);
+          g.beginPath();
+          g.moveTo(x - bw / 2 + 3 * s, top + headR * 2 + 4 * s); g.lineTo(x - bw / 2 - 4 * s, top - lift + 10 * s);
+          g.moveTo(x + bw / 2 - 3 * s, top + headR * 2 + 4 * s); g.lineTo(x + bw / 2 + 4 * s, top - lift + 10 * s);
+          g.stroke();
+          if (p.light && hype > 0.25) {
+            g.fillStyle = p.row ? colors.gel : colors.light;
+            g.beginPath(); g.arc(x + bw / 2 + 4 * s, top - lift + 8 * s, 2.6 * s, 0, Math.PI * 2); g.fill();
+          }
+        }
+      }
+    }
+    return {
+      start(n, hy) {
+        canvas = canvas || $('#crowd'); g = g || canvas.getContext('2d');
+        readColors(); seed(); target = n; hype = hy || 0; resize();
+        cancelAnimationFrame(raf); raf = requestAnimationFrame(frame);
+      },
+      set(n, hy) { target = n; if (hy !== undefined) hype = hy; },
+      hype(hy) { hype = hy; },
+      stop() { cancelAnimationFrame(raf); raf = 0; },
+      resize,
+    };
+  })();
+
+  // ---------------------------------------------------------------- helpers
+  function show(id) {
+    ['tour', 'play', 'results'].forEach((s) => { $('#' + s).hidden = s !== id; });
+    document.documentElement.classList.toggle('playing', id === 'play');
+    window.scrollTo(0, 0);
+  }
+  let toastTimer = 0;
+  function toast(msg) {
+    const t = $('#toast'); t.textContent = msg; t.hidden = false;
+    t.style.animation = 'none'; void t.offsetWidth; t.style.animation = '';
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2600);
+  }
+  let lastFocus = null;
+  function openSheet(id) {
+    $('#toast').hidden = true;
+    lastFocus = document.activeElement;
+    const s = $(id); s.hidden = false;
+    const f = s.querySelector('[data-autofocus]') || s.querySelector('.btn.primary:not(:disabled)') || s.querySelector('button');
+    if (f) setTimeout(() => { try { f.focus({ preventScroll: true }); } catch (e) { f.focus(); } }, 30);
+  }
+  function closeSheet(id) {
+    const s = $(id); if (s.hidden) return; s.hidden = true;
+    if (lastFocus && lastFocus.focus && document.body.contains(lastFocus)) { try { lastFocus.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+  }
+  const sheetOpen = () => $$('.sheet').some((s) => !s.hidden);
+  function answerHTML(q) {
+    const a = num(q.answer);
+    if (q.label === '=') return a + (q.unit ? ' ' + q.unit : '');
+    const joiner = /£$/.test(q.label) ? '' : ' ';
+    return q.label + joiner + a + (q.unit ? ' ' + q.unit : '');
+  }
+  function qblock(q) {
+    const bits = [];
+    if (q.ctx) bits.push(`<div class="qb-ctx">${q.ctx}</div>`);
+    const main = [q.given ? q.given + ', work out' : '', q.html].filter(Boolean).join(' ');
+    bits.push(`<div class="qb-main math">${main}</div>`);
+    if (q.ask) bits.push(`<div class="qb-ctx math">${q.ask}</div>`);
+    return bits.join('');
+  }
+  const stepsList = (q) => q.steps.map((s) => `<li><span class="s-m math">${s.m}</span>${s.n ? `<span class="s-n">${s.n}</span>` : ''}</li>`).join('');
+
+  // ---------------------------------------------------------------- tour
+  function renderTour() {
+    const inst = INSTRUMENTS[save.instrument] || INSTRUMENTS.guitar;
+    $('#posterBand').textContent = save.band || 'Your band';
+    $('#tourLine').textContent = `Algebra world tour ${new Date().getFullYear()} · ${VENUES.length} nights`;
+    $('#playerLine').innerHTML = `${inst.svg}<span>${inst.name} · ${YEARS.find((y) => y[0] === save.year)[1].replace('Y', 'Year ')}</span>`;
+    $('#sbFans').textContent = fmt(save.fans);
+    const total = VENUES.reduce((s, v) => s + vstat(v.id).picks, 0);
+    $('#sbPicks').innerHTML = `${total}<small>/${VENUES.length * 3}</small>`;
+    const st = statusFor(save.fans);
+    $('#sbStatus').textContent = st.name;
+    $('#sbNext').textContent = st.next ? `${fmt(st.next.at - save.fans)} fans to ${st.next.name}` : 'Top of the charts';
+    $('#sbMeter').style.width = (Math.max(0.03, st.progress) * 100).toFixed(1) + '%';
+    const ol = $('#tickets'); ol.innerHTML = '';
+    let nextUpMarked = false;
+    VENUES.forEach((vn, i) => {
+      const s = vstat(vn.id), open = isUnlocked(i);
+      const nextUp = open && !s.plays && !nextUpMarked;
+      if (nextUp) nextUpMarked = true;
+      const li = document.createElement('li');
+      const state = open ? (s.plays ? `${s.picks} of 3 picks, best ${s.best}` : 'Not played yet') : 'Locked';
+      li.innerHTML = `<button class="ticket${open ? '' : ' locked'}${nextUp ? ' next-up' : ''}" type="button" data-i="${i}" aria-label="Night ${i + 1}, ${vn.name}. ${vn.skill}. ${state}.">
+        <span class="t-main">
+          <span class="t-top"><span>Night ${i + 1}</span><span class="t-year">${vn.years}</span></span>
+          <span class="t-name">${vn.name}</span>
+          <span class="t-skill">${vn.skill}</span>
+        </span>
+        <span class="t-stub">${open
+          ? `${picksRow(s.picks)}<span class="t-best">${s.plays ? 'Best ' + s.best : (nextUp ? 'Play me' : 'Not played')}</span>`
+          : `${ICON.lock}<span class="t-best">Locked</span>`}</span>
+      </button>`;
+      ol.appendChild(li);
+    });
+  }
+
+  let venueIndex = 0;
+  function openVenue(i) {
+    venueIndex = i;
+    const vn = VENUES[i], s = vstat(vn.id), open = isUnlocked(i);
+    $('#vsMeta').textContent = `Night ${i + 1} · ${vn.years}`;
+    $('#vsName').textContent = vn.name;
+    $('#vsSkill').textContent = vn.skill;
+    $('#vsBlurb').textContent = vn.blurb;
+    $('#vsExample').innerHTML = vn.example;
+    $('#vsGoal').innerHTML = `A ${secsText(vn.secs)} set. Get <b>${vn.picks[0]}</b> right for 1 pick, <b>${vn.picks[1]}</b> for 2 and <b>${vn.picks[2]}</b> for 3.`;
+    $('#vsBest').innerHTML = s.plays ? `Your best here: <b>${s.best} right</b> ${picksRow(s.picks)}` : 'You have not played here yet.';
+    $('#vsLock').hidden = open;
+    if (!open) $('#vsLock').textContent = `Get 1 pick at ${VENUES[i - 1].name} to unlock this night, or change your school year in band settings.`;
+    $('#vsPlay').disabled = !open; $('#vsPractice').disabled = !open;
+    $('#vsPlay').innerHTML = `<span>Play the gig<small>${vn.secs < 120 ? vn.secs + ' seconds' : vn.secs / 60 + ' minutes'}</small></span>`;
+    $('#vsPractice').innerHTML = '<span>Soundcheck<small>No clock, with tips</small></span>';
+    openSheet('#venueSheet');
+  }
+
+  // ---------------------------------------------------------------- band sheet
+  let bandMode = 'setup', resetArmed = 0;
+  function buildChoices() {
+    $('#instGrid').innerHTML = Object.entries(INSTRUMENTS).map(([k, v]) =>
+      `<label class="choice"><input type="radio" name="inst" value="${k}" id="inst-${k}"><span>${v.svg}${v.short || v.name}</span></label>`).join('');
+    $('#yearGrid').innerHTML = YEARS.map(([y, label]) =>
+      `<label class="choice"><input type="radio" name="year" value="${y}" id="year-${y}"><span>${label}</span></label>`).join('');
+  }
+  function openBand(mode) {
+    bandMode = mode; resetArmed = 0;
+    $('#bandTitle').textContent = mode === 'setup' ? 'Form your band' : 'Band settings';
+    $('#bandMeta').textContent = mode === 'setup' ? 'Before the first gig' : save.band;
+    $('#bandSubmit').textContent = mode === 'setup' ? 'Start the tour' : 'Save';
+    $('#bandClose').hidden = mode === 'setup';
+    $('#settingsExtra').hidden = mode === 'setup';
+    $('#bandInput').value = save.band || randomBand();
+    const inst = $('#inst-' + save.instrument) || $('#inst-guitar'); inst.checked = true;
+    const yr = $('#year-' + save.year) || $('#year-6'); yr.checked = true;
+    $('#sfxToggle').checked = !!save.sfx; $('#beatToggle').checked = !!save.beat;
+    $('#resetBtn').textContent = 'Start the tour again';
+    openSheet('#bandSheet');
+  }
+  function submitBand(e) {
+    e.preventDefault();
+    Sound.unlock();
+    const name = $('#bandInput').value.trim().replace(/\s+/g, ' ').slice(0, 28) || randomBand();
+    const inst = ($('input[name="inst"]:checked') || {}).value || 'guitar';
+    const yr = Number(($('input[name="year"]:checked') || {}).value || 6);
+    const first = bandMode === 'setup';
+    save.band = name; save.instrument = inst; save.year = yr; save.started = true;
+    if (!first) { save.sfx = $('#sfxToggle').checked; save.beat = $('#beatToggle').checked; }
+    persist();
+    closeSheet('#bandSheet');
+    renderTour(); syncMute();
+    if (first) { toast(`${name} are on tour. Tap a night to play.`); Sound.chord(save.instrument, 2); }
+    else toast('Band settings saved.');
+  }
+  function resetTour() {
+    if (Date.now() - resetArmed > 4000) {
+      resetArmed = Date.now(); $('#resetBtn').textContent = 'Tap again to wipe all fans and picks';
+      return;
+    }
+    const keep = { sfx: save.sfx, beat: save.beat };
+    save = Object.assign(blank(), keep, { band: randomBand() });
+    persist(); closeSheet('#bandSheet'); renderTour();
+    setTimeout(() => openBand('setup'), 60);
+  }
+
+  // ---------------------------------------------------------------- run (gig or soundcheck)
+  let run = null, lastTimerTxt = '';
+  function later(fn, ms) { const id = setTimeout(fn, ms); if (run) run.timers.push(id); return id; }
+  function clearTimers() { if (run) { run.timers.forEach(clearTimeout); run.timers = []; } }
+
+  function buildKnob() {
+    const g = $('#knobTicks'); let html = '';
+    for (let i = 0; i <= 11; i++) {
+      const a = (-135 + (i / 11) * 270) * Math.PI / 180;
+      const x1 = 22 + Math.sin(a) * 17, y1 = 22 - Math.cos(a) * 17, x2 = 22 + Math.sin(a) * 20.5, y2 = 22 - Math.cos(a) * 20.5;
+      html += `<line class="tick" data-i="${i}" x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`;
+    }
+    g.innerHTML = html;
+  }
+  function setKnob(vol) {
+    $('#knobPointer').style.transform = `rotate(${-135 + (vol / 11) * 270}deg)`;
+    $$('.tick', $('#knobTicks')).forEach((t, i) => t.classList.toggle('on', i <= vol && vol > 0));
+    const cap = $('#knobCap');
+    if (run && run.mode === 'gig') { const m = multFor(run.streak); cap.textContent = m > 1 ? `×${m} FANS` : `VOL ${vol}`; cap.classList.toggle('hot', m > 1); }
+    else { cap.textContent = `VOL ${vol}`; cap.classList.remove('hot'); }
+    $$('#rig i').forEach((el, i) => el.classList.toggle('on', i < Math.min(8, Math.round(vol * 8 / 11))));
+  }
+  function setOpt(id, html) { const el = $(id); el.hidden = !html; el.innerHTML = html || ''; }
+
+  function startRun(vi, mode) {
+    Sound.unlock();
+    $$('.sheet').forEach((s) => { s.hidden = true; });
+    const venue = VENUES[vi];
+    clearTimers();
+    run = { mode, vi, venue, q: null, input: '', streak: 0, bestStreak: 0, correct: 0, wrong: 0, fans: 0, mistakes: [], recent: [],
+      locked: true, tries: 0, endAt: 0, remaining: venue.secs * 1000, paused: false, started: false, ended: false, timers: [], raf: 0, sawSteps: false };
+    show('play');
+    $('#hudLabel').textContent = mode === 'gig' ? `Night ${vi + 1} · ${venue.name}` : `Soundcheck · ${venue.name}`;
+    $('#timer').hidden = mode !== 'gig';
+    $('#tools').hidden = mode === 'gig';
+    $('.hud-fans').hidden = mode !== 'gig';
+    $('#hudFans').textContent = '0';
+    $('#keyNeg').disabled = !venue.negatives;
+    setKnob(0); Sound.setTempo(0); lastTimerTxt = ''; updateTimer(run.remaining);
+    $('#wall').classList.remove('hit', 'miss', 'shake');
+    $('#callout').hidden = true; $('#tip').hidden = true;
+    ['#qPrompt', '#qMain'].forEach((s) => { $(s).innerHTML = ''; });
+    ['#qGiven', '#qCtx', '#qAsk'].forEach((s) => setOpt(s, ''));
+    $('#rLabel').innerHTML = ''; $('#rVal').textContent = ''; $('#rUnit').textContent = '';
+    requestAnimationFrame(() => Crowd.start(mode === 'gig' ? 7 : 2, 0));
+    if (mode === 'gig') countIn();
+    else { run.started = true; next(); }
+  }
+
+  function countIn() {
+    const ov = $('#count'), big = $('#countNum');
+    ov.hidden = false;
+    let i = 0;
+    const beatMs = 470;
+    const stepFn = () => {
+      if (!run || run.paused) { if (run) run.countStep = stepFn; return; }
+      if (i < 4) {
+        big.textContent = String(i + 1); big.classList.remove('pop'); void big.offsetWidth; big.classList.add('pop');
+        Sound.stick(); i++; later(stepFn, beatMs);
+      } else if (i === 4) {
+        big.textContent = 'Rock!'; big.classList.remove('pop'); void big.offsetWidth; big.classList.add('pop');
+        Sound.rock(save.instrument); i++; later(stepFn, 430);
+      } else {
+        ov.hidden = true; run.started = true; run.endAt = performance.now() + run.remaining;
+        Sound.startBeat(); tick(); next();
+      }
+    };
+    stepFn();
+  }
+
+  function tick() {
+    if (!run || run.mode !== 'gig' || run.paused || run.ended) return;
+    const left = run.endAt - performance.now();
+    updateTimer(left);
+    if (left <= 0) { endGig(); return; }
+    run.raf = requestAnimationFrame(tick);
+  }
+  function updateTimer(ms) {
+    if (!run) return;
+    const total = run.venue.secs * 1000, f = Math.max(0, Math.min(1, ms / total));
+    $('#timerFill').style.transform = `scaleX(${f})`;
+    const s = Math.ceil(Math.max(0, ms) / 1000), txt = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    if (txt !== lastTimerTxt) { $('#timerText').textContent = txt; lastTimerTxt = txt; }
+    $('#timer').classList.toggle('low', ms <= 10000 && ms > 0);
+  }
+
+  function next() {
+    if (!run || run.ended) return;
+    const q = QB.generate(run.vi, run.recent);
+    run.recent.push(q.key); if (run.recent.length > 12) run.recent.shift();
+    run.q = q; run.input = ''; run.tries = 0; run.locked = false; run.sawSteps = false;
+    $('#wall').classList.remove('hit', 'miss', 'shake');
+    $('#tip').hidden = true;
+    $('#tipBtn').disabled = false; $('#howBtn').disabled = false;
+    $('#qPrompt').innerHTML = q.prompt;
+    setOpt('#qGiven', q.given); setOpt('#qCtx', q.ctx); setOpt('#qAsk', q.ask);
+    const main = $('#qMain');
+    main.innerHTML = q.html;
+    main.classList.toggle('multi', q.html.indexOf('class="ml"') !== -1);
+    main.classList.toggle('wordy', !!q.ctx || !!q.given);
+    $('#rLabel').innerHTML = q.label;
+    $('#rUnit').textContent = q.unit || '';
+    renderInput(); fitMain();
+    const wall = $('#wall'); wall.classList.remove('enter'); void wall.offsetWidth; wall.classList.add('enter');
+    $('#live').textContent = '';
+  }
+  function fitMain() {
+    const el = $('#qMain'); el.style.fontSize = '';
+    let size = parseFloat(getComputedStyle(el).fontSize), guard = 0;
+    while (el.scrollWidth > el.clientWidth + 1 && size > 15 && guard++ < 40) { size -= 2; el.style.fontSize = size + 'px'; }
+  }
+  function renderInput() { $('#rVal').textContent = run ? run.input.replace('-', '−') : ''; }
+
+  function press(k) {
+    if (!run || run.paused || !run.started || run.ended) return;
+    if (k === 'enter') { submit(); return; }
+    if (run.locked) return;
+    if (k === 'back') run.input = run.input.slice(0, -1);
+    else if (k === 'neg') {
+      if (!run.venue.negatives) return;
+      run.input = run.input.charAt(0) === '-' ? run.input.slice(1) : '-' + run.input;
+    } else if (/^\d$/.test(k)) {
+      const digits = run.input.replace('-', '');
+      if (digits.length >= 4) return;
+      if (digits === '0') run.input = run.input.replace('0', '');
+      run.input += k;
+    }
+    renderInput();
+  }
+  function nudge() { const l = $('#lcd'); l.classList.remove('nudge'); void l.offsetWidth; l.classList.add('nudge'); }
+
+  function submit() {
+    if (!run || run.locked || run.paused || !run.q) return;
+    const s = run.input;
+    if (s === '' || s === '-') { nudge(); return; }
+    const val = parseInt(s, 10);
+    if (val === run.q.answer) onRight(); else onWrong(val);
+  }
+
+  function callout(html, cls, ms) {
+    const c = $('#callout');
+    c.className = 'callout ' + cls; c.innerHTML = html; c.hidden = false;
+    c.style.animation = 'none'; void c.offsetWidth; c.style.animation = '';
+    clearTimeout(c._t); c._t = setTimeout(() => { c.hidden = true; }, ms || 650);
+  }
+  function wallFlash(cls) {
+    const w = $('#wall');
+    w.classList.remove('hit', 'miss', 'shake'); void w.offsetWidth;
+    w.classList.add(cls); if (cls === 'miss') w.classList.add('shake');
+  }
+  function bumpFans(total, gain) {
+    $('#hudFans').textContent = fmt(total);
+    if (!gain) return;
+    const box = $('.hud-fans'), g = document.createElement('span');
+    g.className = 'gain'; g.textContent = '+' + gain; box.appendChild(g);
+    setTimeout(() => g.remove(), 950);
+  }
+
+  function onRight() {
+    const r = run;
+    nat('haptic', 'confirm');
+    r.locked = true; r.streak++; r.bestStreak = Math.max(r.bestStreak, r.streak); r.correct++;
+    const vol = Math.min(11, r.streak);
+    setKnob(vol); wallFlash('hit');
+    Sound.correct(save.instrument, Math.floor(vol / 1.5));
+    $('#live').textContent = 'Correct.';
+    if (r.mode === 'gig') {
+      const mult = multFor(r.streak), gain = 10 * (r.vi + 1) * mult;
+      r.fans += gain; bumpFans(r.fans, gain);
+      Crowd.set(7 + r.correct * 3, vol / 11);
+      const milestone = r.streak === 4 || r.streak === 8 || r.streak === 11;
+      callout(milestone ? `Volume up! ×${mult}` : pickR(CHEERS), 'good', 620);
+      if (milestone) Sound.cheer(0.5 + vol / 22);
+      Sound.setTempo(vol);
+      later(next, 420);
+    } else {
+      const gain = 2 * (r.vi + 1); save.fans += gain; r.fans += gain; persist();
+      $('#hudLabel').textContent = `Soundcheck · ${r.venue.name} · ${r.correct} nailed`;
+      Crowd.set(2 + Math.min(r.correct, 24), vol / 11);
+      callout(r.sawSteps ? 'Now you know it!' : pickR(CHEERS), 'good', 760);
+      later(next, 900);
+    }
+  }
+
+  function onWrong(val) {
+    const r = run;
+    nat('haptic', 'reject');
+    r.streak = 0; setKnob(0); Sound.wrong(); wallFlash('miss');
+    if (r.mode === 'gig') {
+      r.locked = true; r.wrong++; r.mistakes.push({ q: r.q, given: val });
+      Crowd.hype(0); Sound.setTempo(0);
+      callout(`Bum note!<br><span class="ans math">It was ${answerHTML(r.q)}</span>`, 'bad', 1500);
+      $('#live').textContent = 'Not quite. The answer was ' + num(r.q.answer) + '.';
+      later(next, 1650);
+    } else {
+      r.tries++;
+      if (r.tries >= 2) {
+        r.locked = true;
+        callout('Here is how it goes', 'bad', 900);
+        later(() => openSteps(), 650);
+      } else {
+        callout('Not quite. Have another go', 'bad', 1100);
+        $('#live').textContent = 'Not quite. Have another go.';
+        r.input = ''; renderInput();
+      }
+    }
+  }
+
+  function openSteps() {
+    if (!run || !run.q) return;
+    run.locked = true; run.sawSteps = true;
+    $('#slQ').innerHTML = qblock(run.q);
+    $('#slSteps').innerHTML = stepsList(run.q);
+    openSheet('#stepsSheet');
+  }
+  function closeSteps() { closeSheet('#stepsSheet'); if (run && !run.ended) next(); }
+
+  function showTip() {
+    if (!run || !run.q) return;
+    const t = $('#tip'); t.innerHTML = run.q.hint; t.hidden = false; $('#tipBtn').disabled = true;
+  }
+
+  function pause(title, text) {
+    if (!run) return;
+    if (run.mode === 'gig' && run.started && !run.ended) {
+      run.paused = true; run.remaining = Math.max(0, run.endAt - performance.now());
+      cancelAnimationFrame(run.raf); Sound.stopBeat();
+    } else if (run.mode === 'gig' && !run.started) {
+      run.paused = true;
+    }
+    $('#pauseTitle').textContent = title;
+    $('#pauseText').textContent = text;
+    openSheet('#pauseSheet');
+  }
+  function resume() {
+    closeSheet('#pauseSheet');
+    if (!run) return;
+    run.paused = false;
+    if (run.mode === 'gig' && run.started && !run.ended) { run.endAt = performance.now() + run.remaining; Sound.startBeat(); tick(); }
+    else if (run.countStep) { const f = run.countStep; run.countStep = null; f(); }
+  }
+  function leaveStage(toastMsg) {
+    if (!run) return;
+    clearTimers(); cancelAnimationFrame(run.raf); Sound.stopBeat(); Crowd.stop();
+    $$('.sheet').forEach((s) => { s.hidden = true; });
+    run = null; show('tour'); renderTour();
+    if (toastMsg) toast(toastMsg);
+  }
+  function onQuit() {
+    if (!run) return;
+    if (run.mode === 'practice') {
+      const n = run.correct, f = run.fans;
+      leaveStage(n ? `Soundcheck done. ${n} nailed, +${f} fans.` : '');
+      return;
+    }
+    if (run.ended) return;
+    pause('Leave the stage?', 'The clock is stopped. If you leave now, this set will not count.');
+  }
+
+  // ---------------------------------------------------------------- end of a gig
+  function endGig() {
+    if (!run || run.ended) return;
+    run.ended = true; run.locked = true;
+    clearTimers(); cancelAnimationFrame(run.raf); Sound.stopBeat();
+    updateTimer(0);
+    Sound.finale(save.instrument, run.correct);
+    Crowd.set(7 + run.correct * 3, 1);
+    callout("That's the set!", 'big', 1500);
+    setTimeout(showResults, 1450);
+  }
+
+  function showResults() {
+    const r = run; if (!r) return;
+    const vn = r.venue, picks = vn.picks.filter((t) => r.correct >= t).length;
+    const before = VENUES.map((_, i) => isUnlocked(i));
+    const oldStatus = statusFor(save.fans).name;
+    const st = vstat(vn.id), firstPlay = !st.plays, newBest = r.correct > st.best;
+    save.venues[vn.id] = { best: Math.max(st.best, r.correct), picks: Math.max(st.picks, picks), plays: (st.plays || 0) + 1 };
+    save.fans += r.fans;
+    persist();
+    const unlocked = VENUES.map((_, i) => i).filter((i) => isUnlocked(i) && !before[i]);
+    const newStatus = statusFor(save.fans).name;
+
+    Crowd.stop();
+    const types = ['Guest list', 'Crew', 'VIP', 'All access'];
+    $('#passType').textContent = types[picks]; $('#passType').className = 'pass-type t' + picks;
+    $('#passBand').textContent = save.band;
+    $('#passVenue').textContent = `Night ${r.vi + 1} · ${vn.name} · ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    $('#passRight').textContent = String(r.correct);
+    $('#passPicks').innerHTML = [0, 1, 2].map((i) => pickSVG(i < picks, i)).join('');
+    $('#passPicks').setAttribute('aria-label', `${picks} of 3 picks`);
+    $('#passFans').textContent = '+' + fmt(r.fans);
+    $('#passVol').textContent = String(Math.min(11, r.bestStreak));
+    $('#passWrong').textContent = String(r.wrong);
+    const pass = $('#pass'); pass.style.animation = 'none'; void pass.offsetWidth; pass.style.animation = '';
+
+    const news = [];
+    if (newBest && !firstPlay) news.push(['hot', `New best at ${vn.name}: ${r.correct} right.`]);
+    if (picks === 0) news.push(['', `Get ${vn.picks[0]} right for your first pick here. Soundcheck has tips and worked answers.`]);
+    else if (picks < 3) news.push(['', `${vn.picks[picks] - r.correct} more right next time for ${picks + 1} picks.`]);
+    else news.push(['hot', 'Three picks. That is a sell-out show.']);
+    unlocked.forEach((i) => news.push(['hot', `Unlocked: Night ${i + 1}, ${VENUES[i].name}.`]));
+    if (newStatus !== oldStatus) news.push(['hot', `New rock status: ${newStatus}.`]);
+    $('#news').innerHTML = news.map(([c, t]) => `<p class="${c}">${t}</p>`).join('');
+
+    $('#fixes').hidden = !r.mistakes.length;
+    $('#fixList').innerHTML = r.mistakes.map((m) => `<li class="fix">
+      <div class="qblock">${qblock(m.q)}</div>
+      <div class="fix-a">You played <s>${num(m.given)}</s>. The answer is <b class="math">${answerHTML(m.q)}</b>.</div>
+      <details><summary>Show me how</summary><ol class="steps">${stepsList(m.q)}</ol></details>
+    </li>`).join('');
+
+    show('results');
+    for (let i = 0; i < picks; i++) setTimeout(() => Sound.chord(save.instrument, 2 + i * 2), 450 + i * 220);
+    run.done = true;
+  }
+
+  // ---------------------------------------------------------------- mute
+  function syncMute() {
+    const on = save.sfx || save.beat, b = $('#muteBtn');
+    b.innerHTML = on ? ICON.soundOn : ICON.soundOff;
+    b.setAttribute('aria-pressed', on ? 'false' : 'true');
+    b.setAttribute('aria-label', on ? 'Turn sound off' : 'Turn sound on');
+  }
+  function toggleMute() {
+    const on = save.sfx || save.beat;
+    save.sfx = !on; save.beat = !on; persist(); syncMute();
+    if (!save.beat) Sound.stopBeat();
+    else if (run && run.mode === 'gig' && run.started && !run.paused && !run.ended) Sound.startBeat();
+  }
+
+  // ---------------------------------------------------------------- wiring
+  function wire() {
+    $('#tickets').addEventListener('click', (e) => { const b = e.target.closest('.ticket'); if (b) openVenue(Number(b.dataset.i)); });
+    $('#settingsBtn').addEventListener('click', () => openBand('settings'));
+    $('#vsPlay').addEventListener('click', () => startRun(venueIndex, 'gig'));
+    $('#vsPractice').addEventListener('click', () => startRun(venueIndex, 'practice'));
+    $$('[data-close]').forEach((b) => b.addEventListener('click', () => closeSheet('#' + b.closest('.sheet').id)));
+    $$('.sheet').forEach((s) => s.addEventListener('click', (e) => {
+      if (e.target !== s) return;
+      if (s.id === 'venueSheet' || s.id === 'infoSheet' || (s.id === 'bandSheet' && bandMode !== 'setup')) closeSheet('#' + s.id);
+    }));
+    $('#bandForm').addEventListener('submit', submitBand);
+    $('#diceBtn').addEventListener('click', () => { $('#bandInput').value = randomBand(); });
+    $('#resetBtn').addEventListener('click', resetTour);
+    $('#keys').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b && !b.disabled) { nat('haptic', 'tap'); press(b.dataset.k); } });
+    $('#grownBtn').addEventListener('click', openInfo);
+    $('#quitBtn').addEventListener('click', onQuit);
+    $('#muteBtn').addEventListener('click', toggleMute);
+    $('#tipBtn').addEventListener('click', showTip);
+    $('#howBtn').addEventListener('click', () => { if (run && !run.locked) openSteps(); });
+    $('#skipBtn').addEventListener('click', () => { if (run && !run.locked) { run.streak = 0; setKnob(0); next(); } });
+    $('#stepsNext').addEventListener('click', closeSteps);
+    $('#resumeBtn').addEventListener('click', resume);
+    $('#leaveBtn').addEventListener('click', () => leaveStage(''));
+    $('#againBtn').addEventListener('click', () => startRun(run ? run.vi : venueIndex, 'gig'));
+    $('#resPractice').addEventListener('click', () => startRun(run ? run.vi : venueIndex, 'practice'));
+    $('#resTour').addEventListener('click', () => { run = null; show('tour'); renderTour(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (!$('#stepsSheet').hidden) { closeSteps(); return; }
+        if (!$('#pauseSheet').hidden) { resume(); return; }
+        if (!$('#infoSheet').hidden) { closeSheet('#infoSheet'); return; }
+        if (!$('#venueSheet').hidden) { closeSheet('#venueSheet'); return; }
+        if (!$('#bandSheet').hidden && bandMode !== 'setup') { closeSheet('#bandSheet'); return; }
+        if (run && !$('#play').hidden) onQuit();
+        return;
+      }
+      if (!run || $('#play').hidden || sheetOpen()) return;
+      if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      let k = null;
+      if (/^[0-9]$/.test(e.key)) k = e.key;
+      else if (e.key === '-' || e.key === '−' || e.key === 'Subtract') k = 'neg';
+      else if (e.key === 'Backspace' || e.key === 'Delete') k = 'back';
+      else if (e.key === 'Enter') k = 'enter';
+      if (!k) return;
+      e.preventDefault();
+      press(k);
+      const btn = $(`#keys [data-k="${k}"]`);
+      if (btn) { btn.classList.add('down'); setTimeout(() => btn.classList.remove('down'), 110); }
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && run && run.mode === 'gig' && !run.ended && !run.paused) pause('Paused', 'The clock stopped while you were away. Ready when you are.');
+    });
+    let rz = 0;
+    window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { Crowd.resize(); if (run && !$('#play').hidden) fitMain(); }, 120); });
+  }
+
+  // ---------------------------------------------------------------- Android app bridge
+  // In the Play Store app, the Android side adds window.RTUNative. On the web it is absent and none of this runs.
+  function nat(method, arg) {
+    const N = window.RTUNative;
+    if (!N || typeof N[method] !== 'function') return undefined;
+    try { return arg === undefined ? N[method]() : N[method](arg); } catch (e) { return undefined; }
+  }
+  const IS_APP = !!window.RTUNative;
+  function backWanted() {
+    if (!$('#stepsSheet').hidden || !$('#pauseSheet').hidden || !$('#venueSheet').hidden || !$('#infoSheet').hidden) return true;
+    if (!$('#bandSheet').hidden) return bandMode !== 'setup';
+    return $('#tour').hidden;
+  }
+  let lastBack = null, lastAwake = null;
+  function syncNative() {
+    const b = backWanted(), a = !$('#play').hidden;
+    if (b !== lastBack) { lastBack = b; nat('setBackEnabled', b); }
+    if (a !== lastAwake) { lastAwake = a; nat('setKeepAwake', a); }
+  }
+  // Android Back: close the top panel, pause a gig, or leave the stage. Returns false when there is nothing to close.
+  window.rtuBack = function () {
+    if (!$('#stepsSheet').hidden) { closeSteps(); return true; }
+    if (!$('#pauseSheet').hidden) { resume(); return true; }
+    if (!$('#infoSheet').hidden) { closeSheet('#infoSheet'); return true; }
+    if (!$('#venueSheet').hidden) { closeSheet('#venueSheet'); return true; }
+    if (!$('#bandSheet').hidden) { if (bandMode === 'setup') return false; closeSheet('#bandSheet'); return true; }
+    if (!$('#play').hidden) { onQuit(); return true; }
+    if (!$('#results').hidden) { run = null; show('tour'); renderTour(); return true; }
+    return false;
+  };
+  // Called by Android when the app is hidden (home button, phone call, screen off).
+  window.rtuPause = function () {
+    if (run && run.mode === 'gig' && !run.ended && !run.paused && !$('#play').hidden) pause('Paused', 'The clock stopped while you were away. Ready when you are.');
+    Sound.stopBeat(); Sound.suspend();
+  };
+  function openInfo() {
+    const cfg = window.RTU_CONFIG || {};
+    $('#infoNights').innerHTML = VENUES.map((vn, i) => `<li><b>${i + 1}. ${vn.name}</b><span>${vn.years}</span><em>${vn.skill}</em></li>`).join('');
+    if (cfg.developerName) $('#infoDev').textContent = cfg.developerName;
+    if (cfg.contactEmail) $('#infoEmail').textContent = cfg.contactEmail;
+    if (cfg.policyDate) $('#infoDate').textContent = cfg.policyDate;
+    const ver = nat('appVersion');
+    $('#infoVersion').textContent = ver ? 'Version ' + ver : '';
+    openSheet('#infoSheet');
+  }
+  function initApp() {
+    if (!IS_APP) return;
+    document.documentElement.classList.add('app');
+    $('#grownBtn').hidden = false;
+    const mo = new MutationObserver(syncNative);
+    $$('.screen, .sheet').forEach((el) => mo.observe(el, { attributes: true, attributeFilter: ['hidden'] }));
+    syncNative();
+  }
+
+  // ---------------------------------------------------------------- boot
+  function init() {
+    buildChoices(); buildKnob(); wire(); syncMute(); initApp();
+    if (!save.band) save.band = randomBand();
+    renderTour();
+    if (!save.started) openBand('setup');
+    if (window.__RTU_TEST__) {
+      window.__rtu = { get run() { return run; }, get save() { return save; }, press, startRun, endNow: () => { if (run) { run.endAt = performance.now(); } } };
+    }
+  }
+  let booted = false;
+  function start(data) {
+    if (booted) return; booted = true;
+    load();
+    if (!hadStored && data && data.save && typeof data.save === 'object') save = Object.assign(blank(), data.save);
+    init();
+  }
+  const hot = window.claude && window.claude.hot;
+  try { if (hot && typeof hot.snapshot === 'function') hot.snapshot(() => ({ save: save })); } catch (e) { /* ignore */ }
+  try { if (hot && typeof hot.ready === 'function') hot.ready(start); else start((hot && hot.data) || {}); } catch (e) { start({}); }
+  setTimeout(() => start({}), 700);
+})();
+</script>
+
+</body>
+</html>
